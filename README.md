@@ -13,7 +13,11 @@ Lastly, I personally prefer caching outside of the standard WP media folder, to 
 
 It uses [TimThumb](http://code.google.com/p/timthumb/) script, so this wouldn't be possible without its developers' work.
 
+<<<<<<< HEAD
 > Supports **Cropping**
+=======
+> Supports ~~**[Filters](http://www.binarymoon.co.uk/2010/08/timthumb-image-filters/)** and~~ **Cropping**.
+>>>>>>> d5762735939d914c45ac52781496f48aab85df91
 
 ## Requirements
 
@@ -81,6 +85,27 @@ wp_imager($width='100', $height='100', $crop = 1, $class='', $link=false, $extur
     <td>NULL</td>
   </tr>
   <tr>
+<<<<<<< HEAD
+=======
+    <td>~~filter~~</td>
+    <td>int</td>
+    <td>**Not ready yet** ~~Type of image filter to apply~~
+    <code>1 = Negate – Invert colours
+	2 = Grayscale – turn the image into shades of grey
+	3 = Brightness – Adjust brightness of image. Requires 1 argument to specify the amount of brightness to add. Values can be negative to make the image darker.
+	4 = Contrast – Adjust contrast of image. Requires 1 argument to specify the amount of contrast to apply. Values greater than 0 will reduce the contrast and less than 0 will increase the contrast.
+	5 = Colorize/ Tint – Apply a colour wash to the image. Requires the most parameters of all filters. The arguments are RGBA
+	6 = Edge Detect – Detect the edges on an image
+	7 = Emboss – Emboss the image, can look nice when combined with the colorize filter above.
+	8 = Gaussian Blur – blur the image, unfortunately you can’t specify the amount, but you can apply the same filter multiple times
+	9 = Selective Blur – a different type of blur. Not sure what the difference is, but this blur is less strong than the Gaussian blur.
+	10 = Mean Removal – Uses mean removal to create a “sketchy” effect.
+	11 = Smooth – Makes the image smoother.
+    </code></td>
+    <td>int</td>
+  </tr>
+  <tr>
+>>>>>>> d5762735939d914c45ac52781496f48aab85df91
     <td><code>link</code></td>
     <td>bool</td>
     <td>Wraps the image in HTML <a href="">img</a>, pointing to the image's post, with title attribute filled with post's title for better SEO. Wont' work with <code>$exturl</code></td>
