@@ -13,7 +13,7 @@ Lastly, I personally prefer caching outside of the standard WP media folder, to 
 
 It uses [TimThumb](http://code.google.com/p/timthumb/) script, so this wouldn't be possible without its developers' work.
 
-> Supports **[Filters](http://www.binarymoon.co.uk/2010/08/timthumb-image-filters/)** and **Cropping**.
+> Supports ~~**[Filters](http://www.binarymoon.co.uk/2010/08/timthumb-image-filters/)** and~~ **Cropping**.
 
 ## Requirements
 
@@ -81,9 +81,9 @@ wp_imager($width='100', $height='100', $crop = 1, $class='', $filter=null, $link
     <td>NULL</td>
   </tr>
   <tr>
-    <td>~~<code>filter</code>~~</td>
+    <td>~~filter~~</td>
     <td>int</td>
-    <td>Not ready yet ~~Type of image filter to apply
+    <td>**Not ready yet** ~~Type of image filter to apply~~
     <code>1 = Negate – Invert colours
 	2 = Grayscale – turn the image into shades of grey
 	3 = Brightness – Adjust brightness of image. Requires 1 argument to specify the amount of brightness to add. Values can be negative to make the image darker.
@@ -94,7 +94,7 @@ wp_imager($width='100', $height='100', $crop = 1, $class='', $filter=null, $link
 	8 = Gaussian Blur – blur the image, unfortunately you can’t specify the amount, but you can apply the same filter multiple times
 	9 = Selective Blur – a different type of blur. Not sure what the difference is, but this blur is less strong than the Gaussian blur.
 	10 = Mean Removal – Uses mean removal to create a “sketchy” effect.
-	11 = Smooth – Makes the image smoother.~~
+	11 = Smooth – Makes the image smoother.
     </code></td>
     <td>int</td>
   </tr>
