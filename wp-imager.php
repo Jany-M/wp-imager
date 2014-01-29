@@ -4,7 +4,7 @@
  *	WP Imager
  *
  *	Description		Script for WordPress that provides resizing, output customization and image caching. Can be used inside or outside the loop. If used inside a loop, there is no need to use $exturl, as the script will automatically retrieve an image from the post, following a certain priority pattern: featured image if found, otherwise take one random image from the post. If used outside the loop for any image you want, then $exturl is obviously required.
- *	Released		28.01.2014
+ *	Released		29.01.2014
  *	Version			1.0
  *	License			GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs	TimThumb - http://code.google.com/p/timthumb/

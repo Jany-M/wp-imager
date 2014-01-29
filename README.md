@@ -13,7 +13,7 @@ Lastly, I personally prefer caching outside of the standard WP media folder, to 
 
 It uses [TimThumb](http://code.google.com/p/timthumb/) script, so this wouldn't be possible without its developers' work.
 
-> Supports **[Filters](http://www.binarymoon.co.uk/2010/08/timthumb-image-filters/)** and **Cropping**.
+> Supports **Cropping**
 
 ## Requirements
 
@@ -41,7 +41,7 @@ Call `wp-imager.php` from your functions.php.
 
 ```php
 <?php
-wp_imager($width='100', $height='100', $crop = 1, $class='', $filter=null, $link=false, $exturl=null )
+wp_imager($width='100', $height='100', $crop = 1, $class='', $link=false, $exturl=null )
 ?>
 ```
 
@@ -79,24 +79,6 @@ wp_imager($width='100', $height='100', $crop = 1, $class='', $filter=null, $link
     <td>string</td>
     <td>class name/names to append to image</td>
     <td>NULL</td>
-  </tr>
-  <tr>
-    <td>~~<code>filter</code>~~</td>
-    <td>int</td>
-    <td>Not ready yet ~~Type of image filter to apply
-    <code>1 = Negate – Invert colours
-	2 = Grayscale – turn the image into shades of grey
-	3 = Brightness – Adjust brightness of image. Requires 1 argument to specify the amount of brightness to add. Values can be negative to make the image darker.
-	4 = Contrast – Adjust contrast of image. Requires 1 argument to specify the amount of contrast to apply. Values greater than 0 will reduce the contrast and less than 0 will increase the contrast.
-	5 = Colorize/ Tint – Apply a colour wash to the image. Requires the most parameters of all filters. The arguments are RGBA
-	6 = Edge Detect – Detect the edges on an image
-	7 = Emboss – Emboss the image, can look nice when combined with the colorize filter above.
-	8 = Gaussian Blur – blur the image, unfortunately you can’t specify the amount, but you can apply the same filter multiple times
-	9 = Selective Blur – a different type of blur. Not sure what the difference is, but this blur is less strong than the Gaussian blur.
-	10 = Mean Removal – Uses mean removal to create a “sketchy” effect.
-	11 = Smooth – Makes the image smoother.~~
-    </code></td>
-    <td>int</td>
   </tr>
   <tr>
     <td><code>link</code></td>
@@ -148,13 +130,11 @@ echo wp_imager(600, 350, '', 'img-responsive')
 ?>
 ```
 
-> Check the [guide to filters](Check demos here http://www.binarymoon.co.uk/demo/timthumb-filters/#combinations)
-
 ## Resize + default Cropping + WP post link
 
 ```php
 <?php
-echo wp_imager(600, 350, '', '', '', true)
+echo wp_imager(600, 350, '', '', true)
 ?>
 ```
 
@@ -162,14 +142,14 @@ echo wp_imager(600, 350, '', '', '', true)
 
 ```php
 <?php
-echo wp_imager(600, 350, '', '', '', '', 'http://www.domain.com/image.jpg')
+echo wp_imager(600, 350, '', '', '', 'http://www.domain.com/image.jpg')
 ?>
 ```
 
 
 ## History
 
-**WP Total Image Tool 1.0 - 28/1/2014**
+**WP Total Image Tool 1.0 - 29/1/2014**
 
 - `release` version 1.0
 
