@@ -29,7 +29,7 @@
 
  *	$class		string	class name/names to append to image - NULL (default)
  *	$link		bool	Wraps the image in HTML <a href="">img</a>, pointing to the image's post, with title attribute filled with post's title for better SEO. Wont' work with $exturl - false (default)
- *	$exturl		string	URL of some external/custom image (eg. http://www.mysite.com/image.jpg)	
+ *	$exturl		string	URL of some external image (eg. http://www.anothersite.com/image.jpg)
  * 
  *  @Defaults
  *	Function always returns to avoid yet another parameter, so simply echo it in your code.
@@ -55,10 +55,9 @@ function wp_imager($width=null, $height=null, $crop=null, $class=null,$link=fals
 	if($class != '') $printclass = 'class="'.$class.'" ';
 	$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
 
-	// External/custom image URL
+	// External image URL
 	if ($exturl !== '') {
-		return '<img src="'.get_bloginfo('url').'/cache_img/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$exturl.'" alt="'.$post->post_title.'" '.$printclass.' />';
-
+		return '<img src="'.get_bloginfo('url').'/cache_img/tt.php?src='.$exturl.'&amp;w='.$width.'&amp;h='.$height.'&amp;zc'.$crop.'&amp;q=100" '.$printclass.'/>';
 	
 	// WP featured img
 	} elseif (function_exists('has_post_thumbnail') && has_post_thumbnail($post->ID)) {
