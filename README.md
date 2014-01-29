@@ -158,4 +158,4 @@ echo wp_imager(600, 350, '', '', '', 'http://www.domain.com/image.jpg')
 Copyright (c) 2014 - Jany Martelli @ [Shambix](http://www.shambix.com)
 Released under the [GPL v3 License](http://choosealicense.com/licenses/gpl-v3/).
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cosenary/instagram-php-api/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Jany-M/wp-imager/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
