@@ -68,10 +68,10 @@ wp_imager($width='100', $height='100', $crop = 1, $class='', $link=false, $extur
     <td><code>crop</code></td>
     <td>int</td>
     <td>Type of cropping to perform
-    <code>0 = Resize to Fit exactly specified dimensions (no cropping) 	
+    0 = Resize to Fit exactly specified dimensions (no cropping) 	
     1 =	Crop and resize to best fit the dimensions (default)
     2 =	Resize proportionally to fit entire image into specified dimensions, and add borders if required
-    3 =	Resize proportionally adjusting size of scaled image so there are no borders gaps</code></td>
+    3 =	Resize proportionally adjusting size of scaled image so there are no borders gaps</td>
     <td>1</td>
   </tr>
   <tr>
