@@ -173,12 +173,12 @@ For example:
 
 ## History
 
-**WP Total Image Tool 1.1 - 3/2/2014**
+** WP Imager - 3/2/2014**
 - added $nohtml param
 - added $htaccess var
 - fixed various bugs
 
-**WP Total Image Tool 1.0 - 29/1/2014**
+** WP Imager - 29/1/2014**
 - `release` version 1.0
 
 ## Credits
