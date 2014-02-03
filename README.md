@@ -25,10 +25,12 @@ It uses [TimThumb](http://code.google.com/p/timthumb/) script, so this wouldn't 
 ## Get started
 
 Place the provided `cache_img` folder in your site's root folder.
-If you don't have an `.htaccess` yet, place the one provided in your site's root folder.
-If you already have an `.htaccess`, then adapt it, following the one provided.
 Place the `wp-imager.php` file in your WP template.
 Call `wp-imager.php` from your functions.php.
+
+> If you want to have pretty img urls, then:
+> - If you don't have an `.htaccess` yet, place the one provided in your site's root folder.
+> - If you already have an `.htaccess`, then adapt it, following the one provided.
 
 ```php
 <?php include 'wp-imager.php'; ?>
@@ -41,7 +43,7 @@ Call `wp-imager.php` from your functions.php.
 
 ```php
 <?php
-wp_imager($width='100', $height='100', $crop = 1, $class='', $link=false, $exturl=null )
+wp_imager($width=null, $height=null, $crop=null, $class=null,$link=false, $exturl=null, $nohtml=false)
 ?>
 ```
 
@@ -92,6 +94,12 @@ wp_imager($width='100', $height='100', $crop = 1, $class='', $link=false, $extur
     <td>URL of some external/custom image (eg. http://www.mysite.com/image.jpg)	</td>
     <td>NULL</td>
   </tr>
+  <tr>
+    <td><code>nohtml</code></td>
+    <td>bool</td>
+    <td>When false,images are wrapped already in their HTML tag <img src="" />, with alt attribute filled with post's title for better SEO. If true, only the image url is returned</td>
+    <td>false</td>
+  </tr>
 </table>
 
 
@@ -99,10 +107,9 @@ wp_imager($width='100', $height='100', $crop = 1, $class='', $link=false, $extur
 
 - Function always returns to avoid yet another parameter, so simply echo it in your code.
 - For now, cropping is always done in the middle, zooming in the center.
-- Images are always wrapped already in their HTML tag <img src="" />, with alt attribute filled with post's title for better SEO.
 - Processed IMG's quality is always 100, but this is set through the .htaccess
-- Caching is done in a cache_img folder, in the root of your website, therefore this script requires your .htaccess to follow certain rules OR IT WONT WORK, that's why there is a .htaccess_sample file for you to use/adapt.
-
+- Caching is done in a cache_img folder, in the root of your website
+- Pretty img urls are disabled by default. To enable it change $htaccess to true and adapt the .htaccess provided with the script.
 
 ### Usage
 
@@ -146,11 +153,32 @@ echo wp_imager(600, 350, '', '', '', 'http://www.domain.com/image.jpg')
 ?>
 ```
 
+## Resize + default Cropping + no html wrapper
+
+```php
+<?php
+echo wp_imager(600, 350, '', '', '', '', true)
+?>
+```
+
+### Conflicting Params
+
+Clearly there are some parameters you cannot use together and as the script is specifically made to use within WordPress, restrictions may apply.
+
+For example:
+- <code>$link = true</code> and <code>$nohtml = true</code> dont make sense together, as you can imagine (<code>$nohtml = true</code> wins anyway)
+- <code>$class</code> won't do anything if <code>$nohtml = true</code>
+- <code>$link = true</code> and <code>$exturl</code> will output a broken or empty post url, if <code>$exturl</code> is not a post image (yes, <code>$exturl</code> should work also for images within WordPress but I haven't tested it yet)
+
 
 ## History
 
-**WP Total Image Tool 1.0 - 29/1/2014**
+**WP Total Image Tool 1.1 - 3/2/2014**
+- added $nohtml param
+- added $htaccess var
+- fixed various bugs
 
+**WP Total Image Tool 1.0 - 29/1/2014**
 - `release` version 1.0
 
 ## Credits
