@@ -49,17 +49,17 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'full');
 
 	// Fix for site url lang edit (WPML)
-	if(array_key_exists('sitepress', $GLOBALS)) {
+	if(function_exists('icl_get_home_url')) {
 		global $sitepress;
 		$deflang = $sitepress->get_default_language();
 		if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
 			$lang = ICL_LANGUAGE_CODE;
 			$genurl = str_replace('/'.$lang.'/', '', get_bloginfo('url'));
-			$exturl = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $exturl);
+		} else {
+			$genurl = get_bloginfo('url');
 		}
 	} else {
 		$genurl = get_bloginfo('url');
-		$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
 	}
 	$siteurl = $genurl.'/'.$cache;
 	
@@ -72,7 +72,12 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	if(!isset($height) || is_null($height) || $width == '') $height = '100';
 	if(!isset($crop) || is_null($crop) || $crop == '') $crop = '1';
 	if($class !== '') $printclass = 'class="'.$class.'" ';
-
+	// Fix for site url lang edit (WPML)
+	if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
+		$exturl = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $exturl);
+	} else {
+		$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
+	}
 
 	// External image URL
 	if ($exturl) {
@@ -103,7 +108,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 		} else {
 			if($link) $output .= '<a href="'.get_permalink($post->ID).'" title="'.$post->post_title.'">';
 			if ($htaccess) {
-				$output .= '<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i'.$thumb2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
+				$output .= '<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$thumb2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
 			} else {
 				$output .= '<img src="'.$siteurl.'/tt.php?src='.$thumb2part.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$post->post_title.'" '.$printclass.' />';
 			}
