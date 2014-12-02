@@ -173,12 +173,15 @@ For example:
 
 ## History
 
-** WP Imager - 3/2/2014**
+** 2/12/2014**
+- added compatibility with WPML
+
+** 3/2/2014**
 - added $nohtml param
 - added $htaccess var
 - fixed various bugs
 
-** WP Imager - 29/1/2014**
+** 29/1/2014**
 - `release` version 1.0
 
 ## Credits

@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Can be used inside or outside the loop. If used inside a loop, there is no need to use $exturl, as the script will automatically retrieve an image from the post, following a certain priority pattern: featured image if found, otherwise take one random image from the post. If used outside the loop for any image you want, then $exturl is obviously required.
  *	Released			29.01.2014
- *	Version				1.1
+ *	Version				1.2
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -37,8 +37,7 @@
  *	Function always returns to avoid yet another parameter, so simply echo it in your code.
  *  For now, cropping is always done in the middle, zooming in the center.
  *  Processed IMG's quality is always 100, but this is set through the .htaccess
- *	Caching is done in a cache_img folder, in the root of your website
- *  Pretty img urls are disabled by default. To enable it change $htaccess to true and adapt the .htaccess provided with the script.
+ *	Caching is done in a cache_img folder, in the root of your website, therefore this script requires your .htaccess to follow certain rules OR IT WONT WORK, that's why there is a .htaccess_sample file for you to use/adapt.
  *
 **/
 
@@ -46,41 +45,67 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	global $post;
 
 	// Prepping stuff
+	$cache = 'cache_img';
 	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'full');
-	$thumb2part = str_replace(get_bloginfo('url'), '', $thumbnail[0]);
+
+	// Fix for site url lang edit (WPML)
+	if(array_key_exists('sitepress', $GLOBALS)) {
+		global $sitepress;
+		$deflang = $sitepress->get_default_language();
+		if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
+			$lang = ICL_LANGUAGE_CODE;
+			$genurl = str_replace('/'.$lang.'/', '', get_bloginfo('url'));
+			$exturl = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $exturl);
+		}
+	} else {
+		$genurl = get_bloginfo('url');
+		$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
+	}
+	$siteurl = $genurl.'/'.$cache;
+	
+	// Get attachs
 	$attachments = get_children( array('post_parent' => $post->ID, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'rand', 'numberposts' => 1) );
 	
 	// Defaults
-	$htaccess = false; // switch to true if you want pretty img urls -> edit htaccess as well though
+	$htaccess = true; // htaccess is getting on my nerves, so I'll disable it by default - switch to true if you want to use a custom htaccess for pretty img urls
 	if(!isset($width) || is_null($width) || $width == '') $width = '100';
 	if(!isset($height) || is_null($height) || $width == '') $height = '100';
 	if(!isset($crop) || is_null($crop) || $crop == '') $crop = '1';
 	if($class !== '') $printclass = 'class="'.$class.'" ';
-	$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
+
 
 	// External image URL
 	if ($exturl) {
 		if ($nohtml) {
-			$output = ''.get_bloginfo('url').'/cache_img/tt.php?src='.$exturl.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';			
+			$output = ''.$siteurl.'/tt.php?src='.$exturl.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';			
 		} else {
-			$output = '<img src="'.get_bloginfo('url').'/cache_img/tt.php?src='.$exturl.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" '.$printclass.'/>';
+			$output = '<img src="'.$siteurl.'/tt.php?src='.$exturl.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" '.$printclass.'/>';
 		}
 		return $output;
 	
 	// WP featured img
 	} elseif (function_exists('has_post_thumbnail') && has_post_thumbnail($post->ID)) {
+		// Fix for site url lang edit (WPML)
+		if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
+			$thumb2part = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $thumbnail[0]);
+			$thumb2part = str_replace($genurl.'/', '', $thumb2part);
+			
+		} else {
+			$thumb2part = str_replace(get_bloginfo('url'), '', $thumbnail[0]);
+		}
+
 		if ($nohtml) {
 			if ($htaccess) {
-				$output = ''.get_bloginfo('url').'/cache_img/r/'.$width.'x'.$height.'-'.$crop.'/i'.$thumb2part.'';
+				$output = ''.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$thumb2part.'';
 			} else {
-				$output = ''.get_bloginfo('url').'/cache_img/tt.php?src='.$thumb2part.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
+				$output = ''.$siteurl.'/tt.php?src='.$thumb2part.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
 			}
 		} else {
 			if($link) $output .= '<a href="'.get_permalink($post->ID).'" title="'.$post->post_title.'">';
 			if ($htaccess) {
-				$output .= '<img src="'.get_bloginfo('url').'/cache_img/r/'.$width.'x'.$height.'-'.$crop.'/i'.$thumb2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
+				$output .= '<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i'.$thumb2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
 			} else {
-				$output .= '<img src="'.get_bloginfo('url').'/cache_img/tt.php?src='.$thumb2part.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$post->post_title.'" '.$printclass.' />';
+				$output .= '<img src="'.$siteurl.'/tt.php?src='.$thumb2part.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$post->post_title.'" '.$printclass.' />';
 			}
 			if($link !== '') $output .= '</a>';
 		}
@@ -91,19 +116,24 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 		foreach($attachments as $id => $attachment) {
 			$img = wp_get_attachment_image_src($id, 'full');
 			$img_url = parse_url($img[0], PHP_URL_PATH);
-			$img2part = str_replace(get_bloginfo('url'), '', $img_url);
+			// Fix for site url lang edit (WPML)
+			if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
+				$img2part = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $img_url);
+			} else {
+				$img2part = str_replace(get_bloginfo('url'), '', $img_url);
+			}
 			if ($nohtml) {
 				if ($htaccess) {
-					$output = ''.get_bloginfo('url').'/cache_img/r/'.$width.'x'.$height.'-'.$crop.'/i'.$img2part.'';
+					$output = ''.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i'.$img2part.'';
 				} else {
-					$output = ''.get_bloginfo('url').'/cache_img/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
+					$output = ''.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
 				}
 			} else {
 				if($link) $output .= '<a href="'.get_permalink($post->ID).'" title="'.$post->post_title.'">';
 				if ($htaccess) {
-					$output .='<img src="'.get_bloginfo('url').'/cache_img/r/'.$width.'x'.$height.'-'.$crop.'/i'.$img2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
+					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i'.$img2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
 				} else {
-					$output .='<img src="'.get_bloginfo('url').'/cache_img/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$post->post_title.'" '.$printclass.' />';
+					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$post->post_title.'" '.$printclass.' />';
 				}
 				if($link) $output .= '</a>';
 			}
