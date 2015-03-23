@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Can be used inside or outside the loop. If used inside a loop, there is no need to use $exturl, as the script will automatically retrieve an image from the post, following a certain priority pattern: featured image if found, otherwise take one random image from the post. If used outside the loop for any image you want, then $exturl is obviously required.
  *	Released			29.01.2014
- *	Version				1.2
+ *	Version				1.5
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -49,17 +49,17 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'full');
 
 	// Fix for site url lang edit (WPML)
-	if(function_exists('icl_get_home_url')) {
+	if(array_key_exists('sitepress', $GLOBALS)) {
 		global $sitepress;
 		$deflang = $sitepress->get_default_language();
 		if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
 			$lang = ICL_LANGUAGE_CODE;
 			$genurl = str_replace('/'.$lang.'/', '', get_bloginfo('url'));
-		} else {
-			$genurl = get_bloginfo('url');
+			$exturl = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $exturl);
 		}
 	} else {
 		$genurl = get_bloginfo('url');
+		$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
 	}
 	$siteurl = $genurl.'/'.$cache;
 	
@@ -72,12 +72,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	if(!isset($height) || is_null($height) || $width == '') $height = '100';
 	if(!isset($crop) || is_null($crop) || $crop == '') $crop = '1';
 	if($class !== '') $printclass = 'class="'.$class.'" ';
-	// Fix for site url lang edit (WPML)
-	if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
-		$exturl = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $exturl);
-	} else {
-		$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
-	}
+
 
 	// External image URL
 	if ($exturl) {
@@ -129,14 +124,14 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 			}
 			if ($nohtml) {
 				if ($htaccess) {
-					$output = ''.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i'.$img2part.'';
+					$output = ''.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$img2part.'';
 				} else {
 					$output = ''.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
 				}
 			} else {
 				if($link) $output .= '<a href="'.get_permalink($post->ID).'" title="'.$post->post_title.'">';
 				if ($htaccess) {
-					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i'.$img2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
+					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$img2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
 				} else {
 					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$post->post_title.'" '.$printclass.' />';
 				}
