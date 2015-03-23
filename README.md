@@ -194,7 +194,12 @@ For example:
 
 ## Credits
 
-Author: Jany Martelli @ [Shambix](http://www.shambix.com)
-Released under the [GPL v3 License](http://choosealicense.com/licenses/gpl-v3/)
-
 TimThumbs (discontinued): [BinaryMoon](http://code.google.com/p/timthumb/)
+
+## Author
+
+Jany Martelli @ [Shambix](http://www.shambix.com)
+
+## License
+
+Released under the [GPL v3 License](http://choosealicense.com/licenses/gpl-v3/)
