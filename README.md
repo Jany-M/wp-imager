@@ -12,12 +12,12 @@ Furthermore, WP doesnt provide good-enough image functionality and is quite limi
 Lastly, I personally prefer caching outside of the standard WP media folder, to avoid clutter and absurdly large backups.
 
 It uses [TimThumb](http://code.google.com/p/timthumb/) script.
+> Supports **Cropping**
 
 ## To-Do
 
 I'm thinking about adding support for [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) module.
 
-> Supports **Cropping**
 
 ## Requirements
 
