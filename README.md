@@ -11,9 +11,13 @@ If used outside the loop for any image you want, must use $exturl.
 Furthermore, WP doesnt provide good-enough image functionality and is quite limited yet.
 Lastly, I personally prefer caching outside of the standard WP media folder, to avoid clutter and absurdly large backups.
 
-It uses [TimThumb](http://code.google.com/p/timthumb/) script, so this wouldn't be possible without its developers' work.
-
+It uses [TimThumb](http://code.google.com/p/timthumb/) script.
 > Supports **Cropping**
+
+## To-Do
+
+I'm thinking about adding support for [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) module.
+
 
 ## Requirements
 
@@ -173,6 +177,10 @@ For example:
 
 ## History
 
+** 23/3/2015
+- version 1.5
+- Fixes to WPML compatibility
+
 ** 2/12/2014**
 - added compatibility with WPML
 
@@ -186,7 +194,12 @@ For example:
 
 ## Credits
 
-Copyright (c) 2014 - Jany Martelli @ [Shambix](http://www.shambix.com)
-Released under the [GPL v3 License](http://choosealicense.com/licenses/gpl-v3/).
+TimThumbs (discontinued): [BinaryMoon](http://code.google.com/p/timthumb/)
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Jany-M/wp-imager/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+## Author
+
+Jany Martelli @ [Shambix](http://www.shambix.com)
+
+## License
+
+Released under the [GPL v3 License](http://choosealicense.com/licenses/gpl-v3/)
