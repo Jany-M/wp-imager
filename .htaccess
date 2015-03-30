@@ -1,14 +1,16 @@
-# BEGIN WordPress
 # This is a customized WP htaccess to use with WP Imager
-# Every time you update your URL structure through WordPress, this file gets overwritten, so you can either fix it every time or make the htaccess not-writable
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteBase /
-#RewriteRule ^index\.php$ - [L]
+RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !^/(cache_img) [NC]
 RewriteRule . /index.php [L]
 RewriteRule ^cache_img/r/(.*)x(.*)-(.*)/i/(.*) cache_img/tt.php?src=http://%{HTTP_HOST}/$4&w=$1&h=$2&zc=$3&q=100 [L]
 </IfModule>
+# End of Customized htaccess
+
+# BEGIN WordPress
+
 # END WordPress
