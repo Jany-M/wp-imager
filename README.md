@@ -1,26 +1,21 @@
-# WP Imager
+# WP Imager `v 1.8`
 
-`v 1.8`
 
-## About
+**WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
 
-Script for WordPress that provides resizing, output customization and image caching.
+Can be used inside or outside the loop:
 
-Can be used inside or outside the loop.
-
-If used inside a loop, the script will automatically retrieve an image from the post, following a priority pattern: featured image if found, otherwise take one random image from the post.
-
-If used outside the loop for any image you want, must use $exturl.
-
-**WP Imager** makes image management easier when it comes to manipulating and customizing WordPress images.
-
-Furthermore, WP doesnt provide good-enough image functionality and is quite limited yet.
-
-Lastly, I personally prefer caching outside of the standard WP media folder, to avoid clutter and absurdly large backups.
+- If used inside a loop, the script will automatically retrieve an image from the post, following a priority pattern: featured image if found, otherwise take one random image from the post.
+- If used outside the loop for any image you want, must use $exturl.
 
 > Uses **[TimThumb](http://code.google.com/p/timthumb/)**
+
 > **[WPML](https://wpml.org/)** fully compatible
+
 > Basic support **WordPress [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) module**
+
+> Caches images outside of the WP folders, to avoid clutter and simplify bulk file management & backups
+
 
 ## To-Do
 
@@ -36,9 +31,9 @@ Lastly, I personally prefer caching outside of the standard WP media folder, to 
 
 ## Get started
 
-Place the provided `cache_img` folder in your site's root folder.
-Place the `wp-imager.php` file in your WP template.
-Call `wp-imager.php` from your functions.php.
+1. Place the provided `cache_img` folder in your site's root folder.
+2. Place the `wp-imager.php` file in your WP template.
+3. Call `wp-imager.php` from your functions.php.
 
 > If you want to have pretty img urls, then:
 > - If you don't have an `.htaccess` yet, place the one provided in your site's root folder.
@@ -48,7 +43,7 @@ Call `wp-imager.php` from your functions.php.
 <?php include 'wp-imager.php'; ?>
 ```
 
-> If you don't complete every step the script won't work.
+**If you don't complete every step the script won't work.**
 > Make sure that `cache_img/cache` is writable, in case images are not displaying.
 
 ## Parameters
