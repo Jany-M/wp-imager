@@ -5,20 +5,26 @@
 ## About
 
 Script for WordPress that provides resizing, output customization and image caching.
+
 Can be used inside or outside the loop.
+
 If used inside a loop, the script will automatically retrieve an image from the post, following a priority pattern: featured image if found, otherwise take one random image from the post.
+
 If used outside the loop for any image you want, must use $exturl.
 
 **WP Imager** makes image management easier when it comes to manipulating and customizing WordPress images.
+
 Furthermore, WP doesnt provide good-enough image functionality and is quite limited yet.
+
 Lastly, I personally prefer caching outside of the standard WP media folder, to avoid clutter and absurdly large backups.
 
-It uses [TimThumb](http://code.google.com/p/timthumb/) script.
-> Supports **Cropping**
+> Uses **[TimThumb](http://code.google.com/p/timthumb/)**
+> **[WPML](https://wpml.org/)** fully compatible
+> Basic support **WordPress [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) module**
 
 ## To-Do
 
-I'm thinking about adding support for [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) module.
+- Enhance support for [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/)
 
 
 ## Requirements
