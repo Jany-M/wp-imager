@@ -71,7 +71,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	//echo $thumbnail[0];
 
 	// Fix for site url lang edit (WPML)
-	if(array_key_exists('sitepress', $GLOBALS)) {
+	if (function_exists('icl_object_id')) {
 		global $sitepress;
 		$deflang = $sitepress->get_default_language();
 		if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
