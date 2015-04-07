@@ -26,25 +26,26 @@ Can be used inside or outside the loop:
 
 - PHP 5.2.x or higher
 - GD image library
-- TimThumb script (provided)
-- Custom .htaccess (provided)
 
 ## Get started
 
 1. Place the provided `cache_img` folder in your site's root folder.
-2. Place the `wp-imager.php` file in your WP template.
-3. Call `wp-imager.php` from your functions.php.
 
-> If you want to have pretty img urls, then:
-> - If you don't have an `.htaccess` yet, place the one provided in your site's root folder.
-> - If you already have an `.htaccess`, then adapt it, following the one provided.
+> Make sure that `cache_img/cache` is writable, in case images are not displaying.
+
+2. Place the `wp-imager.php` file in your WP template.
+
+3. Call `wp-imager.php` from your functions.php
 
 ```php
 <?php include 'wp-imager.php'; ?>
 ```
 
+> If you want to have pretty img urls, then there's an extra step:
+> - If you don't have an `.htaccess` yet, place the one provided in your site's root folder.
+> - If you already have an `.htaccess`, then adapt it, following the one provided.
+
 **If you don't complete every step the script won't work.**
-> Make sure that `cache_img/cache` is writable, in case images are not displaying.
 
 ## Parameters
 
