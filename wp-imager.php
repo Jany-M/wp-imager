@@ -23,11 +23,10 @@
  *	$width		int		Size of width (no px) - 100	(default)
  *	$height		int		Size of height (no px) - 100 (default)
  *	$crop		int		Type of cropping to perform - 1 (default)
-						0 =	Resize to Fit exactly specified dimensions (no cropping) 	
-						1 =	Crop and resize to best fit the dimensions (default)
-						2 =	Resize proportionally to fit entire image into specified dimensions, and add borders if required
-						3 =	Resize proportionally adjusting size of scaled image so there are no borders gaps
-
+ *						0 =	Resize to Fit exactly specified dimensions (no cropping) 	
+ *						2 =	Resize proportionally to fit entire image into specified dimensions, and add borders if required
+ *						3 =	Resize proportionally adjusting size of scaled image so there are no borders gaps
+ *
  *	$class		string	class name/names to append to image - NULL (default)
  *	$link		bool	Wraps the image in HTML <a href="">img</a>, pointing to the image's post, with title attribute filled with post's title for better SEO. Wont' work with $exturl - false (default)
  *	$exturl		string	URL of some external image (eg. http://www.anothersite.com/image.jpg)

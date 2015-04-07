@@ -1,5 +1,7 @@
 # WP Imager
 
+`v 1.8`
+
 ## About
 
 Script for WordPress that provides resizing, output customization and image caching.
@@ -176,6 +178,11 @@ For example:
 
 
 ## History
+
+** 7/4/2015
+- version 1.8
+- Fixes to WPML compatibility bug
+- Support for Photon
 
 ** 23/3/2015
 - version 1.5
