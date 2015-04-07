@@ -1,5 +1,6 @@
 # WP Imager `v 1.8`
 
+==============
 
 **WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
 
