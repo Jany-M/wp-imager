@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop. If used inside a loop, the script will automatically retrieve an image from the post, following a priority pattern: featured image if found, otherwise take one random image from the post. If used outside the loop for any image you want, then $exturl is required.
  *	Released			29.01.2014
- *	Version				1.8
+ *	Version				2.0
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -165,6 +165,43 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 			}
 			return $output;
 			break;
+		}
+
+	// Post contains some image, not attached to post (external or added through some file manager)
+	} else {
+		$img_url = '';
+  		ob_start();
+  		ob_end_clean();
+  		$search = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $matches);
+  		$img_url = $matches[1][0];
+  		if(!empty($img_url)) {
+		    //$first_img = "/path/to/default.png";
+		    //return $first_img;
+
+		    // Fix for site url lang edit (WPML)
+			if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
+				$img2part = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $img_url);
+			} else {
+				$img2part = str_replace(get_bloginfo('url'), '', $img_url);
+			}
+
+		    if ($nohtml) {
+				if ($htaccess) {
+					$output = $siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$img2part;
+				} else {
+					$output = ''.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
+				}
+			} else {
+				if($link) $output .= '<a href="'.get_permalink($post->ID).'" title="'.$post->post_title.'">';
+				if ($htaccess) {
+					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$img2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
+				} else {
+					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$post->post_title.'" '.$printclass.' />';
+				}
+				if($link) $output .= '</a>';
+			}
+			return $output;
+
 		}
 	}
 
