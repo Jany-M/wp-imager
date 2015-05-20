@@ -1,24 +1,24 @@
-# WP Imager `v 1.8`
+# WP Imager `v 2.0`
 
 **WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
 
 Can be used inside or outside the loop:
 
-- If used inside a loop, the script will automatically retrieve an image from the post, following a priority pattern: featured image if found, otherwise take one random image from the post.
-- If used outside the loop for any image you want, must use $exturl.
+- If used inside a loop, the script will automatically retrieve an image from the post, following a priority pattern: featured image, random image attached to the post, first image found in post even if external or not attached to post.
+- If used outside the loop or for any image you want display in the template, must use $exturl.
 
-> Uses **[TimThumb](http://code.google.com/p/timthumb/)**
+> Uses **[TimThumb](http://code.google.com/p/timthumb/)** for image resizing and caching
 
 > **[WPML](https://wpml.org/)** fully compatible
 
-> Basic support **WordPress [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) module**
+> Basic support **WordPress [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) module**, it automatically switches to Photon cached images' URLs, if module is on, while keeping your custom sizes and with no need to tweak or edit a thing
 
-> Caches images outside of the WP folders, to avoid clutter and simplify bulk file management & backups
+> Caches images outside of the WP folders, to avoid clutter and overflowing upload folders
 
 
 ## To-Do
 
-- Enhance support for [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/)
+- Add support for [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) image manipulation... maybe?
 
 
 ## Requirements
@@ -50,7 +50,7 @@ Can be used inside or outside the loop:
 
 ```php
 <?php
-wp_imager($width=null, $height=null, $crop=null, $class=null,$link=false, $exturl=null, $nohtml=false)
+wp_imager($width=null, $height=null, $crop=null, $class=null, $link=false, $exturl=null, $nohtml=false)
 ?>
 ```
 
