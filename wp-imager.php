@@ -4,8 +4,8 @@
  *	WP Imager
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop. If used inside a loop, the script will automatically retrieve an image from the post, following a priority pattern: featured image if found, otherwise take one random image from the post. If used outside the loop for any image you want, then $exturl is required.
- *	Released			29.01.2014
- *	Version				2.0
+ *	First Release			29.01.2014
+ *	Version				2.1
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -40,8 +40,15 @@
  *
 **/
 
-function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false, $exturl=null, $nohtml=false) {
+function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false, $exturl=null, $nohtml=false, $post_id=null) {
 	global $post;
+	if ($post_id == '') {
+		$the_id = $post->ID;
+		$the_content = $post->post_content;
+	} else {
+		$the_id = $post_id;
+		$the_content = get_post_field('post_content', $post_id);
+	}
 
 	// Is Photon on and working? 
 	// https://developer.wordpress.com/docs/photon/api/
@@ -57,7 +64,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	if($photon && !function_exists( 'jetpack_photon_url' )) echo 'There is something wrong with your Jetpack / Photon module, or your server configuration - Make sure that your website is publicly reachable.';
 
 	// Get attachs
-	$attachments = get_children( array('post_parent' => $post->ID, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'rand', 'numberposts' => 1) );
+	$attachments = get_children( array('post_parent' => $the_id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'rand', 'numberposts' => 1) );
 
 	// Defaults
 	$htaccess = true; // htaccess is getting on my nerves, so I'll disable it by default - switch to true if you want to use a custom htaccess for pretty img urls
@@ -66,7 +73,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	if(!isset($crop) || is_null($crop) || $crop == '') $crop = '1';
 	if($class !== '') $printclass = 'class="'.$class.'" ';
 	$cache = 'cache_img';
-	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), 'full');
+	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($the_id), 'full');
 	//echo $thumbnail[0];
 
 	// Fix for site url lang edit (WPML)
@@ -94,7 +101,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 		return $output;
 	
 	// WP featured img
-	} elseif (function_exists('has_post_thumbnail') && has_post_thumbnail($post->ID)) {
+	} elseif (function_exists('has_post_thumbnail') && has_post_thumbnail($the_id)) {
 		// Fix for site url lang edit (WPML)
 		if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
 			$thumb2part = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $thumbnail[0]);
@@ -116,7 +123,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 				$output = $siteurl.'/tt.php?src='.$thumb2part.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
 			}
 		} else {
-			if($link) $output .= '<a href="'.get_permalink($post->ID).'" title="'.$post->post_title.'">';
+			if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$post->post_title.'">';
 			if($photon) {
 				$output .= '<img src="http://i1.wp.com/'.$thumb2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all" alt="'.$post->post_title.'" '.$printclass.' />';
 			} elseif ($htaccess) {
@@ -153,7 +160,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 					$output = ''.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
 				}
 			} else {
-				if($link) $output .= '<a href="'.get_permalink($post->ID).'" title="'.$post->post_title.'">';
+				if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$post->post_title.'">';
 				if($photon) {
 					$output .='<img src="http://i1.wp.com/'.$img2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all" alt="'.$post->post_title.'" '.$printclass.' />';
 				} elseif ($htaccess) {
@@ -172,7 +179,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 		$img_url = '';
   		ob_start();
   		ob_end_clean();
-  		$search = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $matches);
+  		$search = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $the_content, $matches);
   		$img_url = $matches[1][0];
   		if(!empty($img_url)) {
 		    //$first_img = "/path/to/default.png";
@@ -192,7 +199,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 					$output = ''.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
 				}
 			} else {
-				if($link) $output .= '<a href="'.get_permalink($post->ID).'" title="'.$post->post_title.'">';
+				if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$post->post_title.'">';
 				if ($htaccess) {
 					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$img2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
 				} else {

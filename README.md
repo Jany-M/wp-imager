@@ -1,11 +1,12 @@
-# WP Imager `v 2.0`
+# WP Imager `v 2.1`
 
 **WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
 
 Can be used inside or outside the loop:
 
 - If used inside a loop, the script will automatically retrieve an image from the post, following a priority pattern: featured image, random image attached to the post, first image found in post even if external or not attached to post.
-- If used outside the loop or for any image you want display in the template, must use $exturl.
+- If used outside the loop, for any image you want display in the template, use the `$exturl` param.
+- If used outside the loop, to display images based on the Post ID, then use the param `$post_id`.
 
 > Uses **[TimThumb](http://code.google.com/p/timthumb/)** for image resizing and caching
 
@@ -179,6 +180,10 @@ For example:
 
 
 ## History
+
+** 6/7/2015
+- version 2.1
+- Support for Post ID (outside of loop)
 
 ** 7/4/2015
 - version 1.8
