@@ -1,4 +1,4 @@
-# WP Imager `v 2.1`
+# WP Imager `v 2.2`
 
 **WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
 
@@ -182,7 +182,7 @@ For example:
 ## History
 
 ** 6/7/2015
-- version 2.1
+- version 2.2
 - Support for Post ID (outside of loop)
 
 ** 7/4/2015

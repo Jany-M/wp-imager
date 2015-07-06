@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop. If used inside a loop, the script will automatically retrieve an image from the post, following a priority pattern: featured image if found, otherwise take one random image from the post. If used outside the loop for any image you want, then $exturl is required.
  *	First Release			29.01.2014
- *	Version				2.1
+ *	Version				2.2
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -45,9 +45,11 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	if ($post_id == '') {
 		$the_id = $post->ID;
 		$the_content = $post->post_content;
+		$the_title = $post->post_title;
 	} else {
 		$the_id = $post_id;
 		$the_content = get_post_field('post_content', $post_id);
+		$the_title = get_the_title($post_id);
 	}
 
 	// Is Photon on and working? 
@@ -123,13 +125,13 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 				$output = $siteurl.'/tt.php?src='.$thumb2part.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
 			}
 		} else {
-			if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$post->post_title.'">';
+			if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$the_title.'">';
 			if($photon) {
-				$output .= '<img src="http://i1.wp.com/'.$thumb2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all" alt="'.$post->post_title.'" '.$printclass.' />';
+				$output .= '<img src="http://i1.wp.com/'.$thumb2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all" alt="'.$the_title.'" '.$printclass.' />';
 			} elseif ($htaccess) {
-				$output .= '<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$thumb2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
+				$output .= '<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$thumb2part.'" alt="'.$the_title.'" '.$printclass.' />';
 			} else {
-				$output .= '<img src="'.$siteurl.'/tt.php?src='.$thumb2part.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$post->post_title.'" '.$printclass.' />';
+				$output .= '<img src="'.$siteurl.'/tt.php?src='.$thumb2part.'&w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$the_title.'" '.$printclass.' />';
 			}
 			if($link !== '') $output .= '</a>';
 		}
@@ -160,13 +162,13 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 					$output = ''.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
 				}
 			} else {
-				if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$post->post_title.'">';
+				if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$the_title.'">';
 				if($photon) {
-					$output .='<img src="http://i1.wp.com/'.$img2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all" alt="'.$post->post_title.'" '.$printclass.' />';
+					$output .='<img src="http://i1.wp.com/'.$img2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all" alt="'.$the_title.'" '.$printclass.' />';
 				} elseif ($htaccess) {
-					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$img2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
+					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$img2part.'" alt="'.$the_title.'" '.$printclass.' />';
 				} else {
-					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$post->post_title.'" '.$printclass.' />';
+					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$the_title.'" '.$printclass.' />';
 				}
 				if($link) $output .= '</a>';
 			}
@@ -199,11 +201,11 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 					$output = ''.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100';
 				}
 			} else {
-				if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$post->post_title.'">';
+				if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$the_title.'">';
 				if ($htaccess) {
-					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$img2part.'" alt="'.$post->post_title.'" '.$printclass.' />';
+					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/i/'.$img2part.'" alt="'.$the_title.'" '.$printclass.' />';
 				} else {
-					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$post->post_title.'" '.$printclass.' />';
+					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.'$w='.$width.'&h='.$height.'&zc='.$crop.'&q=100" alt="'.$the_title.'" '.$printclass.' />';
 				}
 				if($link) $output .= '</a>';
 			}
