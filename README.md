@@ -93,7 +93,7 @@ wp_imager($width=null, $height=null, $crop=null, $class='', $link=false, $exturl
   <tr>
     <td><code>link</code></td>
     <td>bool</td>
-    <td>Wraps the image in HTML <a href="#">img</a>, pointing to the image's post, with title attribute filled with post's title for better SEO. Won't work with <code>$exturl</code></td>
+    <td>Wraps the image in HTML <code><a href="#">img</a></code>, pointing to the image's post, with title attribute filled with post's title for better SEO. Won't work with <code>$exturl</code></td>
     <td>false</td>
   </tr>
   <tr>
@@ -105,7 +105,7 @@ wp_imager($width=null, $height=null, $crop=null, $class='', $link=false, $exturl
   <tr>
     <td><code>nohtml</code></td>
     <td>bool</td>
-    <td>When false,images are wrapped already in their HTML tag <img src="#" />, with alt attribute filled with post's title for better SEO. If true, only the image url is returned</td>
+    <td>When false,images are wrapped already in their HTML tag <code><img src="#" /></code>, with alt attribute filled with post's title for better SEO. If true, only the image url is returned</td>
     <td>false</td>
   </tr>
   <tr>
