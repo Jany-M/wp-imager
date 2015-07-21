@@ -192,7 +192,7 @@ For example:
 
 ## History
 
-** 22/7/2015
+**22/7/2015**
 - version 2.5
 - Updated Timthumb to latest available (June 2014)
 - Change TimThumb default from timthumb-config.php
@@ -200,28 +200,28 @@ For example:
 - Updated htaccess rule
 - Various small improvements
 
-** 6/7/2015
+**6/7/2015**
 - version 2.2
 - Support for Post ID (outside of loop)
 
-** 7/4/2015
+**7/4/2015**
 - version 1.8
 - Fixes to WPML compatibility bug
 - Support for Photon
 
-** 23/3/2015
+**23/3/2015**
 - version 1.5
 - Fixes to WPML compatibility
 
-** 2/12/2014**
+**2/12/2014**
 - added compatibility with WPML
 
-** 3/2/2014**
+**3/2/2014**
 - added $nohtml param
 - added $htaccess var
 - fixed various bugs
 
-** 29/1/2014**
+**29/1/2014**
 - `release` version 1.0
 
 ## Credits
