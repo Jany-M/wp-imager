@@ -7,7 +7,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !^/(cache_img) [NC]
 RewriteRule . /index.php [L]
-RewriteRule ^cache_img/r/(.*)x(.*)-(.*)/i/(.*) cache_img/tt.php?src=http://%{HTTP_HOST}/$4&w=$1&h=$2&zc=$3&q=100 [L]
+RewriteRule ^cache_img/r/(.*)x(.*)-(.*)/b/(.*)/i/(.*) cache_img/tt.php?src=http://%{HTTP_HOST}/$5&w=$1&h=$2&zc=$3&cc=$4 [L]
 </IfModule>
 # End of Customized htaccess
 

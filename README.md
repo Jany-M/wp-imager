@@ -1,4 +1,4 @@
-# WP Imager `v 2.2`
+# WP Imager `v 2.5`
 
 **WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
 
@@ -51,7 +51,7 @@ Can be used inside or outside the loop:
 
 ```php
 <?php
-wp_imager($width=null, $height=null, $crop=null, $class=null, $link=false, $exturl=null, $nohtml=false)
+wp_imager($width=null, $height=null, $crop=null, $class='', $link=false, $exturl=null, $nohtml=false, $post_id=null, $bg_color=null)
 ?>
 ```
 
@@ -93,7 +93,7 @@ wp_imager($width=null, $height=null, $crop=null, $class=null, $link=false, $extu
   <tr>
     <td><code>link</code></td>
     <td>bool</td>
-    <td>Wraps the image in HTML <a href="">img</a>, pointing to the image's post, with title attribute filled with post's title for better SEO. Wont' work with <code>$exturl</code></td>
+    <td>Wraps the image in HTML <a href="#">img</a>, pointing to the image's post, with title attribute filled with post's title for better SEO. Won't work with <code>$exturl</code></td>
     <td>false</td>
   </tr>
   <tr>
@@ -105,8 +105,20 @@ wp_imager($width=null, $height=null, $crop=null, $class=null, $link=false, $extu
   <tr>
     <td><code>nohtml</code></td>
     <td>bool</td>
-    <td>When false,images are wrapped already in their HTML tag <img src="" />, with alt attribute filled with post's title for better SEO. If true, only the image url is returned</td>
+    <td>When false,images are wrapped already in their HTML tag <img src="#" />, with alt attribute filled with post's title for better SEO. If true, only the image url is returned</td>
     <td>false</td>
+  </tr>
+  <tr>
+    <td><code>post_id</code></td>
+    <td>int</td>
+    <td>If empty, will retrieve <code>$post->ID</code> from active loop, else specify the post ID you need to retrieve the img from</td>
+    <td><code>$post->ID</code></td>
+  </tr>
+  <tr>
+    <td><code>bg_color</code></td>
+    <td>int</td>
+    <td>When using crop value '2' (with borders) you can customize the borders color (the canvas beneath the image).</td>
+    <td>ffffff</td>
   </tr>
 </table>
 
@@ -114,10 +126,9 @@ wp_imager($width=null, $height=null, $crop=null, $class=null, $link=false, $extu
 ## Defaults
 
 - Function always returns to avoid yet another parameter, so simply echo it in your code.
-- For now, cropping is always done in the middle, zooming in the center.
-- Processed IMG's quality is always 100, but this is set through the .htaccess
-- Caching is done in a cache_img folder, in the root of your website
-- Pretty img urls are disabled by default. To enable it change $htaccess to true and adapt the .htaccess provided with the script.
+- Processed IMG's quality is always 100
+- Caching is done in a cache_img folder, in the root of your website (provided)
+- Pretty img urls are enabled by default. Adapt the .htaccess provided with the script.
 
 ### Usage
 
@@ -180,6 +191,14 @@ For example:
 
 
 ## History
+
+** 22/7/2015
+- version 2.5
+- Updated Timthumb to latest available (June 2014)
+- Change TimThumb default from timthumb-config.php
+- Added canvas color param
+- Updated htaccess rule
+- Various small improvements
 
 ** 6/7/2015
 - version 2.2
