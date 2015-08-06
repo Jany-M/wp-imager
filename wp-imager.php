@@ -116,7 +116,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	// External image URL
 	if ($exturl) {
 		if ($nohtml) {
-			$output = ''.$siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt;			
+			$output = $siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt;			
 		} else {
 			$output = '<img src="'.$siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'" '.$printclass.'/>';
 		}
