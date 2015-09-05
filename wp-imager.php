@@ -22,8 +22,9 @@
  *  @Params
  *	$width		int		Size of width (no px) - 100	(default)
  *	$height		int		Size of height (no px) - 100 (default)
- *	$crop		int		Type of cropping to perform - 1 (default)
- *						0 =	Resize to Fit exactly specified dimensions (no cropping) 	
+ *	$crop		int		Type of cropping to perform - 3 (default)
+ *						0 =	Resize to Fit exactly specified dimensions (no cropping)
+ *	 					1 = Crop and resize to best fit the dimensions
  *						2 =	Resize proportionally to fit entire image into specified dimensions, and add borders if required
  *						3 =	Resize proportionally adjusting size of scaled image so there are no borders gaps
  *
@@ -40,7 +41,7 @@
  *
 **/
 
-function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false, $exturl=null, $nohtml=false, $post_id=null, $bg_color=null) {
+function wp_imager($width=null, $height=null, $crop, $class, $link=false, $exturl=null, $nohtml=false, $post_id=null, $bg_color=null) {
 	
 	$cache = 'cache_img';
 
@@ -58,13 +59,13 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 
 	// Is Photon on and working? 
 	// https://developer.wordpress.com/docs/photon/api/
-	if( class_exists( 'Jetpack' ) && Jetpack::is_module_active( 'photon' ) ) { // method as of WP/Jetpack versions after 05/22/13
+	if(class_exists('Jetpack') && Jetpack::is_module_active('photon') ) { // method as of WP/Jetpack versions after 05/22/13
 		$photon = true;
-		remove_filter( 'image_downsize', array( Jetpack_Photon::instance(), 'filter_image_downsize' ) );
+		remove_filter('image_downsize', array( Jetpack_Photon::instance(), 'filter_image_downsize'));
 	} else {
 		$photon = false;
 	}
-	if($photon && !function_exists( 'jetpack_photon_url' )) echo 'There is something wrong with your Jetpack / Photon module, or your server configuration - Make sure that your website is publicly reachable.';
+	if($photon && !function_exists('jetpack_photon_url' )) echo 'There is something wrong with your Jetpack / Photon module, or your server configuration - Make sure that your website is publicly reachable.';
 
 	// Fix for site url lang edit (WPML)
 	if (function_exists('icl_object_id')) {
@@ -82,7 +83,7 @@ function wp_imager($width=null, $height=null, $crop=null, $class='', $link=false
 	$siteurl = $genurl.'/'.$cache;
 
 	// Defaults
-	require_once (ABSPATH . $cache.'/timthumb-config.php'); // Please adjust here your preferred TimThumb defaults
+	require_once (ABSPATH . $cache.'/tt-conf.php'); // Please adjust here your preferred TimThumb defaults
 
 	$htaccess = true;
 
