@@ -68,19 +68,23 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 	if($photon && !function_exists('jetpack_photon_url' )) echo 'There is something wrong with your Jetpack / Photon module, or your server configuration - Make sure that your website is publicly reachable.';
 
 	// Fix for site url lang edit (WPML)
-	if (function_exists('icl_object_id')) {
+	if(defined('ICL_LANGUAGE_CODE')) {
+		//echo 'wpml is active';
 		global $sitepress;
 		$deflang = $sitepress->get_default_language();
-		if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
+		//echo $deflang;
+		if(ICL_LANGUAGE_CODE !== $deflang) {
 			$lang = ICL_LANGUAGE_CODE;
-			$genurl = str_replace('/'.$lang.'/', '', get_bloginfo('url'));
-			$exturl = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $exturl);
+			$genurl = str_replace('/'.$lang, '', get_bloginfo('url'));
+			$exturl = str_replace(get_bloginfo('url').'/'.$lang, '', $exturl);
 		}
 	} else {
 		$genurl = get_bloginfo('url');
 		$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
 	}
 	$siteurl = $genurl.'/'.$cache;
+	//echo get_bloginfo('url');
+	//echo $genurl;
 
 	// Defaults
 	require_once (ABSPATH . $cache.'/tt-conf.php'); // Please adjust here your preferred TimThumb defaults
@@ -132,6 +136,7 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 		} else {
 			$thumb2part = str_replace(get_bloginfo('url'), '', $thumbnail[0]);
 		}
+		//echo $thumb2part;
 		// Fix for Photon
 		if($photon) {
 			$thumb2part = str_replace('http://','', $thumbnail[0]);
