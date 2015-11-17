@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop.
  *	First Release		29.01.2014
- *	Version				2.5
+ *	Version				2.5.1
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -101,12 +101,12 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 	} else {
 		$height_tt = '&h='.$height;
 	}
-	if($crop == '') {
+	if(!isset($crop)) {
 		$crop = DEFAULT_ZC;
 	} else {
 		$crop_tt = '&zc='.$crop;
 	}
-	if($bg_color == '') {
+	if(!isset($bg_color)) {
 		$bg_color = DEFAULT_CC;
 	} else {
 		$bg_color_tt = '&cc='.$bg_color.'&ct=0';

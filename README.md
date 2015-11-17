@@ -1,6 +1,7 @@
-# WP Imager `v 2.5`
+# WP Imager `v 2.5.1`
 
 **WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
+It has a pure PHP WP twin, [PHP-Imager](https://github.com/Jany-M/php-imager)
 
 Can be used inside or outside the loop:
 
@@ -10,16 +11,16 @@ Can be used inside or outside the loop:
 
 > Uses **[TimThumb](http://code.google.com/p/timthumb/)** for image resizing and caching
 
-> **[WPML](https://wpml.org/)** fully compatible
+> **[WPML](https://wpml.org/)** 100% compatible
 
-> Basic support **WordPress [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) module**, it automatically switches to Photon cached images' URLs, if module is on, while keeping your custom sizes and with no need to tweak or edit a thing
+> Supports **WordPress [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) module**, it automatically switches to Photon cached images' URLs, if module is on, while keeping your custom sizes and with no need to tweak or edit a thing
 
-> Caches images outside of the WP folders, to avoid clutter and overflowing upload folders
+> Caches images outside of the WordPress folders, to avoid clutter and overflowing upload folders
 
 
 ## To-Do
 
-- Add support for [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) image manipulation... maybe?
+- Support for [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) filters. Maybe?
 
 
 ## Requirements
@@ -190,7 +191,7 @@ For example:
 - <code>$link = true</code> and <code>$exturl</code> will output a broken or empty post url, if <code>$exturl</code> is not a post image (yes, <code>$exturl</code> should work also for images within WordPress but I haven't tested it yet)
 
 
-## History
+## Changelog
 
 **22/7/2015**
 - version 2.5
