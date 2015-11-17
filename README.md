@@ -51,9 +51,7 @@ Can be used inside or outside the loop:
 ## Parameters
 
 ```php
-<?php
-wp_imager($width=null, $height=null, $crop=null, $class='', $link=false, $exturl=null, $nohtml=false, $post_id=null, $bg_color=null)
-?>
+<?php wp_imager($width=null, $height=null, $crop=null, $class='', $link=false, $exturl=null, $nohtml=false, $post_id=null, $bg_color=null); ?>
 ```
 
 <table>
@@ -106,7 +104,7 @@ wp_imager($width=null, $height=null, $crop=null, $class='', $link=false, $exturl
   <tr>
     <td><code>nohtml</code></td>
     <td>bool</td>
-    <td>When false,images are wrapped already in their HTML tag `<img src="#" />`, with <code>alt</code>code> attribute filled with post's title for better SEO. If true, only the image url is returned</td>
+    <td>When false, image is wrapped in its <code>img</code> HTML tag, with <code>alt</code> attribute filled with post's title for better SEO. If true, only the image url is returned</td>
     <td>false</td>
   </tr>
   <tr>
@@ -136,49 +134,37 @@ wp_imager($width=null, $height=null, $crop=null, $class='', $link=false, $exturl
 ## Resize + default Cropping
 
 ```php
-<?php
-echo wp_imager(600, 350)
-?>
+<?php echo wp_imager(600, 350); ?>
 ```
 
 ## Resize with no Cropping
 
 ```php
-<?php
-echo wp_imager(600, 350, 0)
-?>
+<?php echo wp_imager(600, 350, 0); ?>
 ```
 
 ## Resize + default Cropping + Image Class
 
 ```php
-<?php
-echo wp_imager(600, 350, '', 'img-responsive')
-?>
+<?php echo wp_imager(600, 350, '', 'img-responsive'); ?>
 ```
 
 ## Resize + default Cropping + WP post link
 
 ```php
-<?php
-echo wp_imager(600, 350, '', '', true)
-?>
+<?php echo wp_imager(600, 350, '', '', true); ?>
 ```
 
 ## Resize + default Cropping + custom img URL (outside the loop)
 
 ```php
-<?php
-echo wp_imager(600, 350, '', '', '', 'http://www.domain.com/image.jpg')
-?>
+<?php echo wp_imager(600, 350, '', '', '', 'http://www.domain.com/image.jpg'); ?>
 ```
 
 ## Resize + default Cropping + no html wrapper
 
 ```php
-<?php
-echo wp_imager(600, 350, '', '', '', '', true)
-?>
+<?php echo wp_imager(600, 350, '', '', '', '', true); ?>
 ```
 
 ### Conflicting Params
