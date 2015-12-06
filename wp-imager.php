@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop.
  *	First Release		29.01.2014
- *	Version				2.5.1
+ *	Version				2.5.3
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -87,30 +87,60 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 	//echo $genurl;
 
 	// Defaults
-	require_once (ABSPATH . $cache.'/tt-conf.php'); // Please adjust here your preferred TimThumb defaults
+	$htaccess = true; // will produce pretty urls - requires the htaccess
+	
+	// Please adjust in that file your preferred TimThumb defaults
+	$tt_conf = ABSPATH.$cache.'/tt-conf.php'; 
+	if(is_file($tt_conf)) {
+		require_once ($tt_conf);
+		if($width == '') {
+			$width = DEFAULT_WIDTH;
+		} else {
+			$width_tt = '&w='.$width;
+		}
+		if($height == '') {
+			$height = DEFAULT_HEIGHT;
+		} else {
+			$height_tt = '&h='.$height;
+		}
+		if(!isset($crop)) {
+			$crop = DEFAULT_ZC;
+			$crop_tt = '&zc='.$crop;
+		} else {
+			$crop_tt = '&zc='.$crop;
+		}
+		if(!isset($bg_color)) {
+			$bg_color = DEFAULT_CC;
+		} else {
+			$bg_color_tt = '&cc='.$bg_color.'&ct=0';
+		}
+	} else {
+		// If tt-conf doesnt exist use these default values
+		if($width == '') {
+			$width = 300;
+		} else {
+			$width_tt = '&w='.$width;
+		}
+		if($height == '') {
+			$height = 300;
+		} else {
+			$height_tt = '&h='.$height;
+		}
+		if(!isset($crop)) {
+			$crop = 1;
+			$crop_tt = '&zc='.$crop;
+		} else {
+			$crop_tt = '&zc='.$crop;
+		}
+		if(!isset($bg_color)) {
+			$bg_color = 'ffffff';
+		} else {
+			$bg_color_tt = '&cc='.$bg_color.'&ct=0';
+		}
+	}
 
-	$htaccess = true;
-
-	if($width == '') {
-		$width = DEFAULT_WIDTH;
-	} else {
-		$width_tt = '&w='.$width;
-	}
-	if($height == '') {
-		$height = DEFAULT_HEIGHT;
-	} else {
-		$height_tt = '&h='.$height;
-	}
-	if(!isset($crop)) {
-		$crop = DEFAULT_ZC;
-	} else {
-		$crop_tt = '&zc='.$crop;
-	}
-	if(!isset($bg_color)) {
-		$bg_color = DEFAULT_CC;
-	} else {
-		$bg_color_tt = '&cc='.$bg_color.'&ct=0';
-	}
+	//echo $crop;
+	//echo $crop_tt;
 
 	if($class !== '') $printclass = 'class="'.$class.'" ';
 	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($the_id), 'full');

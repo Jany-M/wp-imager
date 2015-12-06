@@ -1,4 +1,4 @@
-# WP Imager `v 2.5.1`
+# WP Imager `v 2.5.3`
 
 **WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
 It has a pure PHP WP twin, [PHP-Imager](https://github.com/Jany-M/php-imager)
