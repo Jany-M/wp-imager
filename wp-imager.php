@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop.
  *	First Release		29.01.2014
- *	Version				2.5.3
+ *	Version				2.6
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -47,15 +47,42 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 
 	// Get Post ID
 	global $post;
-	if ($post_id == '') {
+	
+	/*echo '<pre>';
+	var_dump($post);
+	echo "</pre>\r\n";*/
+
+	if ($exturl == '' && $post_id == '') { // global
 		$the_id = $post->ID;
 		$the_content = $post->post_content;
 		$the_title = $post->post_title;
-	} else {
+		//echo 'case 1';
+		//echo ' - id:'.$the_id;
+	} elseif ($post_id != '') { // id post nel parametro
 		$the_id = $post_id;
 		$the_content = get_post_field('post_content', $post_id);
 		$the_title = get_the_title($post_id);
+		//echo 'case 2';
+	} elseif ($exturl != '') { // url nel parametro
+		$the_id = '';
+		$the_content = '';
+		$the_title = '';
+		//echo 'case 3';
+	} else {
+		$the_id = get_the_ID();
+		$the_content = get_post_field('post_content', $the_id);
+		$the_title = get_the_title($the_id);
+		//echo 'case 4';
 	}
+	
+	//echo $the_id;
+
+	// Get attachments
+	$attachments = get_children( array('post_parent' => $the_id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'rand', 'numberposts' => 1) );
+
+	// Get thumbnail
+	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($the_id), 'full');
+	//var_dump($thumbnail);
 
 	// Is Photon on and working? 
 	// https://developer.wordpress.com/docs/photon/api/
@@ -143,13 +170,10 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 	//echo $crop_tt;
 
 	if($class !== '') $printclass = 'class="'.$class.'" ';
-	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($the_id), 'full');
-
-	// Get attachs
-	$attachments = get_children( array('post_parent' => $the_id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'rand', 'numberposts' => 1) );
 
 	// External image URL
 	if ($exturl) {
+		//echo 'case exturl';
 		if ($nohtml) {
 			$output = $siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt;			
 		} else {
@@ -158,7 +182,8 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 		return $output;
 	
 	// WP featured img
-	} elseif (function_exists('has_post_thumbnail') && has_post_thumbnail($the_id)) {
+	} elseif (function_exists('has_post_thumbnail') && has_post_thumbnail($the_id) && $thumbnail != false) {
+		//echo 'case feat';
 		// Fix for site url lang edit (WPML)
 		if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
 			$thumb2part = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $thumbnail[0]);
@@ -195,9 +220,18 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 	
 	// WP post attachments
 	} elseif ($attachments == true) {
+		echo 'attachments';
+
+		/*echo '<pre>';
+		var_dump($attachments);
+		echo "</pre>\r\n";*/
+
 		foreach($attachments as $id => $attachment) {
 			$img = wp_get_attachment_image_src($id, 'full');
 			$img_url = parse_url($img[0], PHP_URL_PATH);
+
+			//echo $img_url;
+
 			// Fix for site url lang edit (WPML)
 			if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
 				$img2part = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $img_url);
@@ -234,11 +268,30 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 
 	// Post contains some image, not attached to post (external or added through some file manager)
 	} else {
+
+		//echo $the_id;
+		//echo 'case img in post';
+
 		$img_url = '';
   		ob_start();
   		ob_end_clean();
   		$search = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $the_content, $matches);
   		$img_url = $matches[1][0];
+
+  		//echo $the_content;
+  		//echo 'matches: ';
+  		//var_dump($matches);
+
+  		// This is needed only in very rare cases (eg. imported content from other site and attachments were not correctly indexed within posts in db)
+  		//echo "1:".$img_url."\r\n";
+  		$pattern_url = '/^(.*)(\/wp-content\/.*)$/';
+		$remove_url = '$2';
+		$limit = -1;
+		//$count = 1;
+		$img_url = preg_replace($pattern_url, $remove_url, $img_url, $limit, $count);
+		//echo ' 2: '.$img_url;
+
+
   		if(!empty($img_url)) {
 		    //$first_img = "/path/to/default.png";
 		    //return $first_img;

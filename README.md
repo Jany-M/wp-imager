@@ -1,4 +1,4 @@
-# WP Imager `v 2.5.3`
+# WP Imager `v 2.6`
 
 **WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
 It has a pure PHP WP twin, [PHP-Imager](https://github.com/Jany-M/php-imager)
@@ -178,6 +178,11 @@ For example:
 
 
 ## Changelog
+
+**10/12/2015**
+- version 2.6
+- Added support in case there's no attachments in posts but there are images within the content
+- Added support in case after content import, attachments ID are incorrect, the script will still find the image provided it's in the current server (with same folder structure)
 
 **22/7/2015**
 - version 2.5
