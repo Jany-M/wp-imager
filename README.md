@@ -1,4 +1,4 @@
-# WP Imager `v 2.6.1`
+# WP Imager `v 2.6.5`
 
 **WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
 It has a pure PHP WP twin, [PHP-Imager](https://github.com/Jany-M/php-imager)
@@ -178,6 +178,12 @@ For example:
 
 
 ## Changelog
+
+**30/4/2016**
+- version 2.6.5
+- Fixed minor issues with WPML compatibility
+- Overriding `jpeg_quality` and `wp_editor_set_quality` to 100
+- Added `post_id` param support (in previous versions) 
 
 **10/12/2015**
 - version 2.6

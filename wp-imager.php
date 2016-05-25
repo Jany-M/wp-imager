@@ -1,18 +1,18 @@
-<?php 
+<?php
 
 /**
  *	WP Imager
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop.
  *	First Release		29.01.2014
- *	Version				2.6.1
+ *	Version				2.6.5
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
  *	Author:				Jany Martelli
  *	Author's Website:	http://www.shambix.com/
  *  Script url:			https://github.com/Jany-M/WP-Imager
- *  
+ *
  *  @Requirements
  *  The plugin needs the cache_img folder to reside in the root of your website.
  *  Inside the cache_img folder you must create a cache folder, that is writable (try to chmod it to 777 in case script cant write to it)
@@ -34,7 +34,7 @@
  *	$nohtml		bool	When false,images are wrapped already in their HTML tag <img src="" />, with alt attribute filled with post's title for better SEO. If true, only the image urlis returned - false (default)
  *	$post_id	int 	If empty, will retrieve current loop post->ID, or you can add your own post ID value
  *	$bg_color	int		In case of different cropping type (eg. with borders) or transparent png, you can add your own color (eg. 000000) - ffffff (default)
- * 
+ *
  *  @Defaults
  *	Function always returns to avoid yet another parameter, so simply echo it in your code.
  *	Caching is done in a cache_img folder, in the root of your website, therefore this script requires your .htaccess to follow certain rules OR IT WONT WORK, that's why there is a .htaccess_sample file for you to use/adapt.
@@ -42,49 +42,44 @@
 **/
 
 function wp_imager($width=null, $height=null, $crop, $class, $link=false, $exturl=null, $nohtml=false, $post_id=null, $bg_color=null) {
-	
+
 	$cache = 'cache_img';
 
 	// Get Post ID
 	global $post;
-	
-	/*echo '<pre>';
-	var_dump($post);
-	echo "</pre>\r\n";*/
 
 	if ($exturl == '' && $post_id == '') { // global
 		$the_id = $post->ID;
 		$the_content = $post->post_content;
 		$the_title = $post->post_title;
-		//echo 'case 1';
-		//echo ' - id:'.$the_id;
-	} elseif ($post_id != '') { // id post nel parametro
+	} elseif ($post_id != '') { // post id in param
 		$the_id = $post_id;
 		$the_content = get_post_field('post_content', $post_id);
 		$the_title = get_the_title($post_id);
-		//echo 'case 2';
-	} elseif ($exturl != '') { // url nel parametro
+	} elseif ($exturl != '') { // url in param
 		$the_id = '';
 		$the_content = '';
 		$the_title = '';
-		//echo 'case 3';
 	} else {
 		$the_id = get_the_ID();
 		$the_content = get_post_field('post_content', $the_id);
 		$the_title = get_the_title($the_id);
-		//echo 'case 4';
 	}
-	
-	//echo $the_id;
+
+	// WP 4.5 image quality bump to 100
+	function wpimager_full_quality( $quality ) {
+    	return 100;
+	}
+	add_filter( 'wp_editor_set_quality', 'wpimager_full_quality' );
+	add_filter( 'jpeg_quality', 'wpimager_full_quality' );
 
 	// Get attachments
 	$attachments = get_children( array('post_parent' => $the_id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'rand', 'numberposts' => 1) );
 
 	// Get thumbnail
 	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($the_id), 'full');
-	//var_dump($thumbnail);
 
-	// Is Photon on and working? 
+	// Is Photon on and working?
 	// https://developer.wordpress.com/docs/photon/api/
 	if(class_exists('Jetpack') && Jetpack::is_module_active('photon') ) { // method as of WP/Jetpack versions after 05/22/13
 		$photon = true;
@@ -96,10 +91,8 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 
 	// Fix for site url lang edit (WPML)
 	if(defined('ICL_LANGUAGE_CODE')) {
-		//echo 'wpml is active';
 		global $sitepress;
 		$deflang = $sitepress->get_default_language();
-		//echo $deflang;
 		if(ICL_LANGUAGE_CODE !== $deflang) {
 			$lang = ICL_LANGUAGE_CODE;
 			$genurl = str_replace('/'.$lang, '', get_bloginfo('url'));
@@ -110,33 +103,33 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 		$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
 	}
 	$siteurl = $genurl.'/'.$cache;
-	//echo get_bloginfo('url');
-	//echo $genurl;
 
 	// Defaults
 	$htaccess = true; // will produce pretty urls - requires the htaccess
-	
-	// Please adjust in that file your preferred TimThumb defaults
-	$tt_conf = ABSPATH.$cache.'/tt-conf.php'; 
-	if(is_file($tt_conf)) {
+
+	// Please adjust defaults in that in that file your preferred values, not below here
+	$tt_conf = ABSPATH.$cache.'/tt-conf.php';
+
+	if(is_file($tt_conf) || file_exists($tt_conf)) {
 		require_once ($tt_conf);
-		if($width == '') {
+
+		if(!isset($width) || $width == '') {
 			$width = DEFAULT_WIDTH;
 		} else {
 			$width_tt = '&w='.$width;
 		}
-		if($height == '') {
+		if(!isset($height) || $height == '') {
 			$height = DEFAULT_HEIGHT;
 		} else {
 			$height_tt = '&h='.$height;
 		}
-		if(!isset($crop)) {
+		if(!isset($crop) || $crop == '') {
 			$crop = DEFAULT_ZC;
 			$crop_tt = '&zc='.$crop;
 		} else {
 			$crop_tt = '&zc='.$crop;
 		}
-		if(!isset($bg_color)) {
+		if(!isset($bg_color) || $bg_color == '') {
 			$bg_color = DEFAULT_CC;
 		} else {
 			$bg_color_tt = '&cc='.$bg_color.'&ct=0';
@@ -166,32 +159,28 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 		}
 	}
 
-	//echo $crop;
-	//echo $crop_tt;
-
 	if($class !== '') $printclass = 'class="'.$class.'" ';
 
 	// External image URL
 	if ($exturl) {
 		//echo 'case exturl';
 		if ($nohtml) {
-			$output = $siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt;			
+			$output = $siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt;
 		} else {
 			$output = '<img src="'.$siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'" '.$printclass.'/>';
 		}
 		return $output;
-	
+
 	// WP featured img
 	} elseif (function_exists('has_post_thumbnail') && has_post_thumbnail($the_id) && $thumbnail != false) {
 		//echo 'case feat';
 		// Fix for site url lang edit (WPML)
 		if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
 			$thumb2part = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $thumbnail[0]);
-			$thumb2part = str_replace($genurl.'/', '', $thumb2part);		
+			$thumb2part = str_replace($genurl, '', $thumb2part);
 		} else {
 			$thumb2part = str_replace(get_bloginfo('url'), '', $thumbnail[0]);
 		}
-		//echo $thumb2part;
 		// Fix for Photon
 		if($photon) {
 			$thumb2part = str_replace('http://','', $thumbnail[0]);
@@ -201,7 +190,7 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 			if($photon) {
 					$output = 'http://i1.wp.com/'.$thumb2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all';
 			} elseif ($htaccess) {
-				$output = $siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$thumb2part;
+				$output = $siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i'.$thumb2part;
 			} else {
 				$output = $siteurl.'/tt.php?src='.$thumb2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt;
 			}
@@ -217,20 +206,14 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 			if($link !== '') $output .= '</a>';
 		}
 		return $output;
-	
+
 	// WP post attachments
 	} elseif ($attachments == true) {
 		//echo 'attachments';
 
-		/*echo '<pre>';
-		var_dump($attachments);
-		echo "</pre>\r\n";*/
-
 		foreach($attachments as $id => $attachment) {
 			$img = wp_get_attachment_image_src($id, 'full');
 			$img_url = parse_url($img[0], PHP_URL_PATH);
-
-			//echo $img_url;
 
 			// Fix for site url lang edit (WPML)
 			if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
@@ -242,7 +225,7 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 			if($photon) {
 				$img2part = str_replace('http://','', $img_url);
 			}
-				
+
 			if ($nohtml) {
 				if($photon) {
 					$output = 'http://i1.wp.com/'.$img2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all';
@@ -269,32 +252,19 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 	// Post contains some image, not attached to post (external or added through some file manager)
 	} else {
 
-		//echo $the_id;
-		//echo 'case img in post';
-
 		$img_url = '';
   		ob_start();
   		ob_end_clean();
   		$search = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $the_content, $matches);
   		$img_url = $matches[1][0];
 
-  		//echo $the_content;
-  		//echo 'matches: ';
-  		//var_dump($matches);
-
   		// This is needed only in very rare cases (eg. imported content from other site and attachments were not correctly indexed within posts in db)
-  		//echo "1:".$img_url."\r\n";
   		$pattern_url = '/^(.*)(\/wp-content\/.*)$/';
 		$remove_url = '$2';
 		$limit = -1;
-		//$count = 1;
 		$img_url = preg_replace($pattern_url, $remove_url, $img_url, $limit, $count);
-		//echo ' 2: '.$img_url;
-
 
   		if(!empty($img_url)) {
-		    //$first_img = "/path/to/default.png";
-		    //return $first_img;
 
 		    // Fix for site url lang edit (WPML)
 			if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
@@ -325,7 +295,7 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 
 	// Since Photon keeps changing automatically all urls, we had to disable it, let's reactivate it now
 	if ( $photon ) {
-		add_filter( 'image_downsize', array( Jetpack_Photon::instance(), 'filter_image_downsize' ), 10, 3 ); 
+		add_filter( 'image_downsize', array( Jetpack_Photon::instance(), 'filter_image_downsize' ), 10, 3 );
 	}
 }
 ?>
