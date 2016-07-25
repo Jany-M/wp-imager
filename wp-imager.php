@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop.
  *	First Release		29.01.2014
- *	Version				2.6.5
+ *	Version				2.6.6
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -67,11 +67,11 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 	}
 
 	// WP 4.5 image quality bump to 100
-	function wpimager_full_quality( $quality ) {
+	/*function wpimager_full_quality( $quality ) {
     	return 100;
 	}
 	add_filter( 'wp_editor_set_quality', 'wpimager_full_quality' );
-	add_filter( 'jpeg_quality', 'wpimager_full_quality' );
+	add_filter( 'jpeg_quality', 'wpimager_full_quality' );*/
 
 	// Get attachments
 	$attachments = get_children( array('post_parent' => $the_id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'rand', 'numberposts' => 1) );
@@ -252,6 +252,8 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 	// Post contains some image, not attached to post (external or added through some file manager)
 	} else {
 
+		//echo 'last option'; return;
+
 		$img_url = '';
   		ob_start();
   		ob_end_clean();
@@ -274,18 +276,23 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 			}
 
 		    if ($nohtml) {
-				if ($htaccess) {
+				//echo 'case no html'; return;
+
+				/*if ($htaccess) {
 					$output = $siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$img2part;
-				} else {
+				} else {*/
 					$output = ''.$siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt;
-				}
+				//}
 			} else {
+				//echo 'case html'; return;
+				//echo $img2part; return;
+
 				if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$the_title.'">';
-				if ($htaccess) {
-					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$img2part.'" alt="'.$the_title.'" '.$printclass.' />';
-				} else {
+				/*if ($htaccess) {
+					//$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$img2part.'" alt="'.$the_title.'" '.$printclass.' />';
+				} else {*/
 					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'" alt="'.$the_title.'" '.$printclass.' />';
-				}
+				//}
 				if($link) $output .= '</a>';
 			}
 			return $output;
