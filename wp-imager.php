@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop.
  *	First Release		29.01.2014
- *	Version				2.6.6
+ *	Version				2.7.1
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -41,75 +41,55 @@
  *
 **/
 
-function wp_imager($width=null, $height=null, $crop, $class, $link=false, $exturl=null, $nohtml=false, $post_id=null, $bg_color=null) {
+//function wp_imager($args = array()) {
+function wp_imager($width=null, $height=null, $crop, $class, $link=false, $exturl=null, $nohtml=false, $post_id=null, $bg_color=null, $original_url=null) {
 
-	$cache = 'cache_img';
+	/* --------------------------------------------------------------------------------
+	*
+	*   DEFAULTS
+	*
+	-------------------------------------------------------------------------------- */
 
-	// Get Post ID
-	global $post;
+	/*$default = array(
+		'width'			=> '',
+		'height'		=> '',
+		'crop'			=> 1,
+		'class'			=> '',
+		'link'			=> false,
+		'exturl'		=> '',
+		'nohtml'		=> false,
+		'post_id'		=> '',
+		'bg_color' 		=> '',
+		'greyscale'		=> '',
+		'colorize' 		=> '',
+		'original_size' => true,
+		'original_url' 	=> false
+	);
+	$settings = array_merge($default,$args);
+    extract($settings);
 
-	if ($exturl == '' && $post_id == '') { // global
-		$the_id = $post->ID;
-		$the_content = $post->post_content;
-		$the_title = $post->post_title;
-	} elseif ($post_id != '') { // post id in param
-		$the_id = $post_id;
-		$the_content = get_post_field('post_content', $post_id);
-		$the_title = get_the_title($post_id);
-	} elseif ($exturl != '') { // url in param
-		$the_id = '';
-		$the_content = '';
-		$the_title = '';
-	} else {
-		$the_id = get_the_ID();
-		$the_content = get_post_field('post_content', $the_id);
-		$the_title = get_the_title($the_id);
-	}
+	$width 			= $settings['width'];
+	$height 		= $settings['height'];
+	$crop 			= $settings['crop'];
+	$class 			= $settings['class'];
+	$link 			= $settings['link'];
+	$exturl 		= $settings['exturl'];
+	$nohtml 		= $settings['nohtml'];
+	$post_id 		= $settings['post_id'];
+	$bg_color 		= $settings['bg_color'];
+	$greyscale 		= $settings['greyscale'];
+	$colorize 		= $settings['colorize'];
+	$original_size 	= $settings['original_size'];
+	$original_url 	= $settings['original_url'];*/
 
-	// WP 4.5 image quality bump to 100
-	/*function wpimager_full_quality( $quality ) {
-    	return 100;
-	}
-	add_filter( 'wp_editor_set_quality', 'wpimager_full_quality' );
-	add_filter( 'jpeg_quality', 'wpimager_full_quality' );*/
-
-	// Get attachments
-	$attachments = get_children( array('post_parent' => $the_id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'rand', 'numberposts' => 1) );
-
-	// Get thumbnail
-	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($the_id), 'full');
-
-	// Is Photon on and working?
-	// https://developer.wordpress.com/docs/photon/api/
-	if(class_exists('Jetpack') && Jetpack::is_module_active('photon') ) { // method as of WP/Jetpack versions after 05/22/13
-		$photon = true;
-		remove_filter('image_downsize', array( Jetpack_Photon::instance(), 'filter_image_downsize'));
-	} else {
-		$photon = false;
-	}
-	if($photon && !function_exists('jetpack_photon_url' )) echo 'There is something wrong with your Jetpack / Photon module, or your server configuration - Make sure that your website is publicly reachable.';
-
-	// Fix for site url lang edit (WPML)
-	if(defined('ICL_LANGUAGE_CODE')) {
-		global $sitepress;
-		$deflang = $sitepress->get_default_language();
-		if(ICL_LANGUAGE_CODE !== $deflang) {
-			$lang = ICL_LANGUAGE_CODE;
-			$genurl = str_replace('/'.$lang, '', get_bloginfo('url'));
-			$exturl = str_replace(get_bloginfo('url').'/'.$lang, '', $exturl);
-		}
-	} else {
-		$genurl = get_bloginfo('url');
-		$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
-	}
-	$siteurl = $genurl.'/'.$cache;
-
-	// Defaults
+	$cache = 'cache_img'; // the folder where the cached img are stored
 	$htaccess = true; // will produce pretty urls - requires the htaccess
+	if($original_size === true) define('ORIGINAL_SIZE', true); // if one of the sizes isnt set, then use a function to determine it proportionally
+	if($class !== '') $printclass = 'class="'.$class.'" ';
 
-	// Please adjust defaults in that in that file your preferred values, not below here
+	// Default Sizes
+	// Please adjust defaults in that in that file, not here
 	$tt_conf = ABSPATH.$cache.'/tt-conf.php';
-
 	if(is_file($tt_conf) || file_exists($tt_conf)) {
 		require_once ($tt_conf);
 
@@ -159,21 +139,122 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 		}
 	}
 
-	if($class !== '') $printclass = 'class="'.$class.'" ';
+	// WP 4.5 image quality bump to 100
+	/*function wpimager_full_quality( $quality ) {
+    	return 100;
+	}
+	add_filter( 'wp_editor_set_quality', 'wpimager_full_quality' );
+	add_filter( 'jpeg_quality', 'wpimager_full_quality' );*/
 
-	// External image URL
+	/* --------------------------------------------------------------------------------
+	*
+	*   POST DATA SETUP
+	*
+	-------------------------------------------------------------------------------- */
+
+	global $post;
+
+	if ($exturl == '' && $post_id == '') { // global
+		$the_id = $post->ID;
+		$the_content = $post->post_content;
+		$the_title = $post->post_title;
+	} elseif ($post_id != '') { // post id in param
+		$the_id = $post_id;
+		$the_content = get_post_field('post_content', $post_id);
+		$the_title = get_the_title($post_id);
+	} elseif ($exturl != '') { // url in param
+		$the_id = '';
+		$the_content = '';
+		$the_title = '';
+	} else {
+		$the_id = get_the_ID();
+		$the_content = get_post_field('post_content', $the_id);
+		$the_title = get_the_title($the_id);
+	}
+
+	// Get attachments
+	$attachments = get_children( array('post_parent' => $the_id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'orderby' => 'rand', 'numberposts' => 1) );
+
+	// Get thumbnail
+	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($the_id), 'full');
+
+	// Is Photon on and working?
+	// https://developer.wordpress.com/docs/photon/api/
+	if(class_exists('Jetpack') && Jetpack::is_module_active('photon') ) { // method as of WP/Jetpack versions after 05/22/13
+		$photon = true;
+		remove_filter('image_downsize', array( Jetpack_Photon::instance(), 'filter_image_downsize'));
+	} else {
+		$photon = false;
+	}
+	if($photon && !function_exists('jetpack_photon_url' )) echo 'There is something wrong with your Jetpack / Photon module, or your server configuration - Make sure that your website is publicly reachable.';
+
+
+	/* --------------------------------------------------------------------------------
+	*
+	*   WPML Fix for site url lang edit
+	*
+	-------------------------------------------------------------------------------- */
+
+	if(defined('ICL_LANGUAGE_CODE')) {
+		global $sitepress;
+		$deflang = $sitepress->get_default_language();
+		if(ICL_LANGUAGE_CODE !== $deflang) {
+			$lang = ICL_LANGUAGE_CODE;
+			$genurl = str_replace('/'.$lang, '', get_bloginfo('url'));
+			$exturl = str_replace(get_bloginfo('url').'/'.$lang, '', $exturl);
+		}
+	} else {
+		$genurl = get_bloginfo('url');
+		$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
+	}
+	$siteurl = $genurl.'/'.$cache;
+
+
+	/* --------------------------------------------------------------------------------
+	*
+	*   1. EXTERNAL IMAGE URL
+	*
+	-------------------------------------------------------------------------------- */
+
 	if ($exturl) {
-		//echo 'case exturl';
-		if ($nohtml) {
-			$output = $siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt;
+
+		/*$img_name = substr($exturl, -7);
+		$img_transient = 'img_transient'.$img_name;
+		//delete_transient('archi_homeslide_6h');
+        if(get_transient($img_transient) === false) {
+			// Proportional sizes
+			$prop_sizes = get_proportional_size($width, $height, $exturl);
+			if(!empty($prop_sizes))
+				$sizes = array();
+				$sizes['w'] = '&w='.$prop_sizes[0];
+				$sizes['h'] = '&h='.$prop_sizes[1];
+			//Cache Results
+	        set_transient($img_transient, $sizes, 4 * WEEK_IN_SECONDS );
+	    }
+	    $sizes = get_transient($img_transient);
+		$width_tt = $sizes['w'];
+		$height_tt = $sizes['h'];*/
+
+		// Ouput
+		if ($original_url) {
+			$output = $exturl;
+		} elseif($nohtml) {
+			$output = $siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100';
 		} else {
-			$output = '<img src="'.$siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'" '.$printclass.'/>';
+			$output = '<img src="'.$siteurl.'/tt.php?src='.$exturl.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100" '.$printclass.'/>';
 		}
 		return $output;
 
-	// WP featured img
+	/* --------------------------------------------------------------------------------
+	*
+	*   2. WP FEATURED IMAGE
+	*
+	-------------------------------------------------------------------------------- */
+
 	} elseif (function_exists('has_post_thumbnail') && has_post_thumbnail($the_id) && $thumbnail != false) {
-		//echo 'case feat';
+
+		//echo 'feat img'; exit;
+
 		// Fix for site url lang edit (WPML)
 		if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
 			$thumb2part = str_replace(get_bloginfo('url').'/'.$lang.'/', '', $thumbnail[0]);
@@ -181,18 +262,30 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 		} else {
 			$thumb2part = str_replace(get_bloginfo('url'), '', $thumbnail[0]);
 		}
+
+		// Proportional sizes
+		/*$prop_sizes = get_proportional_size($width, $height, $thumbnail[0]);
+		if(!empty($prop_sizes))
+			$width = $prop_sizes[0];
+			$height = $prop_sizes[1];
+			$width_tt = '&w='.$prop_sizes[0];
+			$height_tt = '&h='.$prop_sizes[1];*/
+
 		// Fix for Photon
 		if($photon) {
 			$thumb2part = str_replace('http://','', $thumbnail[0]);
 		}
 
-		if ($nohtml) {
+		// Output
+		if($original_url) {
+			$output = $thumbnail[0];
+		} elseif ($nohtml) {
 			if($photon) {
 					$output = 'http://i1.wp.com/'.$thumb2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all';
 			} elseif ($htaccess) {
 				$output = $siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i'.$thumb2part;
 			} else {
-				$output = $siteurl.'/tt.php?src='.$thumb2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt;
+				$output = $siteurl.'/tt.php?src='.$thumb2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100';
 			}
 		} else {
 			if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$the_title.'">';
@@ -201,19 +294,27 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 			} elseif ($htaccess) {
 				$output .= '<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$thumb2part.'" alt="'.$the_title.'" '.$printclass.' />';
 			} else {
-				$output .= '<img src="'.$siteurl.'/tt.php?src='.$thumb2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'" alt="'.$the_title.'" '.$printclass.' />';
+				$output .= '<img src="'.$siteurl.'/tt.php?src='.$thumb2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100" alt="'.$the_title.'" '.$printclass.' />';
 			}
 			if($link !== '') $output .= '</a>';
 		}
 		return $output;
 
-	// WP post attachments
+	/* --------------------------------------------------------------------------------
+	*
+	*   2. WP POST ATTACHMENTS
+	*
+	-------------------------------------------------------------------------------- */
+
 	} elseif ($attachments == true) {
-		//echo 'attachments';
+
+		//echo 'case attachments'; exit;
 
 		foreach($attachments as $id => $attachment) {
 			$img = wp_get_attachment_image_src($id, 'full');
 			$img_url = parse_url($img[0], PHP_URL_PATH);
+
+			//var_dump($img); exit;
 
 			// Fix for site url lang edit (WPML)
 			if(defined('ICL_LANGUAGE_CODE') && ICL_LANGUAGE_CODE !== $deflang) {
@@ -221,18 +322,37 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 			} else {
 				$img2part = str_replace(get_bloginfo('url'), '', $img_url);
 			}
+
+			// Proportional sizes
+			/*if(is_null($height) || $hright < 1 ) {
+				$prop_sizes = get_proportional_size($width, $height, $img[0]);
+				//var_dump($prop_sizes); exit;
+				if(!empty($prop_sizes))
+					$width = $prop_sizes[0];
+					$height = $prop_sizes[1];
+					$width_tt = '&w='.$prop_sizes[0];
+					$height_tt = '&h='.$prop_sizes[1];
+			}*/
+
+			/*echo $width.' - '.$height; //exit;
+			echo ' --- '.$width_tt.' - '.$height_tt; exit;*/
+			//echo $siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt; exit;
+
 			// Fix for Photon
 			if($photon) {
 				$img2part = str_replace('http://','', $img_url);
 			}
 
-			if ($nohtml) {
+			// Output
+			if($original_url) {
+				$output = $img[0];
+			} elseif ($nohtml) {
 				if($photon) {
 					$output = 'http://i1.wp.com/'.$img2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all';
 				} elseif ($htaccess) {
 					$output = $siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$img2part;
 				} else {
-					$output = ''.$siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt;
+					$output = $siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100';
 				}
 			} else {
 				if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$the_title.'">';
@@ -241,7 +361,7 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 				} elseif ($htaccess) {
 					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$img2part.'" alt="'.$the_title.'" '.$printclass.' />';
 				} else {
-					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'" alt="'.$the_title.'" '.$printclass.' />';
+					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100" alt="'.$the_title.'" '.$printclass.' />';
 				}
 				if($link) $output .= '</a>';
 			}
@@ -249,16 +369,22 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 			break;
 		}
 
-	// Post contains some image, not attached to post (external or added through some file manager)
-	} else {
+	/* --------------------------------------------------------------------------------
+	*
+	*   2. POST CONTENT IMG PARSING
+	*	Post contains some image, not attached to post (external or added through some file manager)
+	*
+	-------------------------------------------------------------------------------- */
 
-		//echo 'last option'; return;
+	} else {
 
 		$img_url = '';
   		ob_start();
   		ob_end_clean();
   		$search = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $the_content, $matches);
   		$img_url = $matches[1][0];
+		// Keep original url for later
+		$img_url_orig = $img_url;
 
   		// This is needed only in very rare cases (eg. imported content from other site and attachments were not correctly indexed within posts in db)
   		$pattern_url = '/^(.*)(\/wp-content\/.*)$/';
@@ -275,23 +401,30 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 				$img2part = str_replace(get_bloginfo('url'), '', $img_url);
 			}
 
-		    if ($nohtml) {
-				//echo 'case no html'; return;
+			// Proportional sizes
+			/*$prop_sizes = get_proportional_size($width, $height, $img2part);
+			if(!empty($prop_sizes))
+				$width = $prop_sizes[0];
+				$height = $prop_sizes[1];
+				$width_tt = '&w='.$prop_sizes[0];
+				$height_tt = '&h='.$prop_sizes[1];*/
+
+			if($original_url) {
+				$output = $img_url_orig;
+			} elseif ($nohtml) {
 
 				/*if ($htaccess) {
 					$output = $siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$img2part;
 				} else {*/
-					$output = ''.$siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt;
+					$output = ''.$siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100';
 				//}
 			} else {
-				//echo 'case html'; return;
-				//echo $img2part; return;
 
 				if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$the_title.'">';
 				/*if ($htaccess) {
 					//$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$img2part.'" alt="'.$the_title.'" '.$printclass.' />';
 				} else {*/
-					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'" alt="'.$the_title.'" '.$printclass.' />';
+					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100" alt="'.$the_title.'" '.$printclass.' />';
 				//}
 				if($link) $output .= '</a>';
 			}
@@ -305,4 +438,55 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 		add_filter( 'image_downsize', array( Jetpack_Photon::instance(), 'filter_image_downsize' ), 10, 3 );
 	}
 }
+
+// Get proportional H of image
+/*function get_proportional_size($width_target = null, $height_target = null, $img) {
+	// Get IMG original size
+	$img_data = getimagesize($img);
+
+	//var_dump($img_data); exit;
+
+	if(is_null($width_target) || $width_target == '')
+		$width = $img_data[0];
+	if(is_null($height_target) || $height_target == '')
+		$height = $img_data[1];
+
+	//echo 'W='.$width.' - H='.$height; exit;
+
+	$ratio = $img_data[0] / $img_data[1];
+
+	// If Ratio is 1 then we dont need to calculate proportions
+	if($ratio != 1) {
+
+		if($width_target > 0) {
+			if ($width > $height) {
+				$percentage = ($width_target / $width);
+			} else {
+				$percentage = ($width_target / $height);
+			}
+		} elseif($height_target > 0) {
+			if ($width > $height) {
+				$percentage = ($height_target / $width);
+			} else {
+				$percentage = ($height_target / $height);
+			}
+		}
+
+		//echo $percentage; exit;
+
+		//gets the new value and applies the percentage, then rounds the value
+		$width = round($width * $percentage);
+		$height = round($height * $percentage);
+		//echo 'W='.$width.' - H='.$height; exit;
+	}
+
+	// put proportional w & h in array
+	$new_sizes = array();
+	$new_sizes[] = $width;
+	$new_sizes[] = $height;
+
+	//var_dump($new_sizes); exit;
+
+	return $new_sizes;
+}*/
 ?>

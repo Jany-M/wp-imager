@@ -1,4 +1,4 @@
-# WP Imager `v 2.6.5`
+# WP Imager `v 2.7.1`
 
 **WP Imager** makes image management easier when it comes to manipulating, caching and customizing WordPress images.
 It has a pure PHP WP twin, [PHP-Imager](https://github.com/Jany-M/php-imager)
@@ -20,6 +20,8 @@ Can be used inside or outside the loop:
 
 ## To-Do
 
+- Convert function params to array
+- Add TimThumb filters
 - Support for [Jetpack](http://jetpack.me/)'s [Photon](https://developer.wordpress.com/docs/photon/api/) filters. Maybe?
 
 
@@ -77,7 +79,7 @@ Can be used inside or outside the loop:
     <td><code>crop</code></td>
     <td>int</td>
     <td>Type of cropping to perform
-    0 = Resize to Fit exactly specified dimensions (no cropping) 	
+    0 = Resize to Fit exactly specified dimensions (no cropping)
     1 =	Crop and resize to best fit the dimensions (default)
     2 =	Resize proportionally to fit entire image into specified dimensions, and add borders if required
     3 =	Resize proportionally adjusting size of scaled image so there are no borders gaps</td>
@@ -183,12 +185,19 @@ For example:
 - version 2.6.5
 - Fixed minor issues with WPML compatibility
 - Overriding `jpeg_quality` and `wp_editor_set_quality` to 100
-- Added `post_id` param support (in previous versions) 
+- Added `post_id` param support (in previous versions)
 
 **10/12/2015**
 - version 2.6
 - Added support in case there's no attachments in posts but there are images within the content
 - Added support in case after content import, attachments ID are incorrect, the script will still find the image provided it's in the current server (with same folder structure)
+
+**14/9/2016**
+- version 2.7.1
+- Fixed minor bugs
+- Added 100 quality on jpg
+- Preparing for params as array
+- Preparing for TimThumb Filters
 
 **22/7/2015**
 - version 2.5
