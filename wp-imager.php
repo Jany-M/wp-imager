@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop.
  *	First Release		29.01.2014
- *	Version				2.7.1
+ *	Version				2.7.3
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -22,7 +22,7 @@
  *  @Params
  *	$width		int		Size of width (no px) - 100	(default)
  *	$height		int		Size of height (no px) - 100 (default)
- *	$crop		int		Type of cropping to perform - 3 (default)
+ *	$crop		int		Type of cropping to perform - 1 (default)
  *						0 =	Resize to Fit exactly specified dimensions (no cropping)
  *	 					1 = Crop and resize to best fit the dimensions
  *						2 =	Resize proportionally to fit entire image into specified dimensions, and add borders if required
@@ -42,7 +42,7 @@
 **/
 
 //function wp_imager($args = array()) {
-function wp_imager($width=null, $height=null, $crop, $class, $link=false, $exturl=null, $nohtml=false, $post_id=null, $bg_color=null, $original_url=null) {
+function wp_imager($width=null, $height=null, $crop=1, $class=null, $link=true, $exturl=null, $nohtml=false, $post_id=null, $bg_color=null, $original_url=null) {
 
 	/* --------------------------------------------------------------------------------
 	*
@@ -81,6 +81,10 @@ function wp_imager($width=null, $height=null, $crop, $class, $link=false, $extur
 	$colorize 		= $settings['colorize'];
 	$original_size 	= $settings['original_size'];
 	$original_url 	= $settings['original_url'];*/
+
+	// TEMP DEF
+	$original_size = null;
+	$bg_color_tt = null;
 
 	$cache = 'cache_img'; // the folder where the cached img are stored
 	$htaccess = true; // will produce pretty urls - requires the htaccess
