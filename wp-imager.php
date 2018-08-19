@@ -5,7 +5,7 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop.
  *	First Release		29.01.2014
- *	Version				2.7.3
+ *	Version				2.7.4
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
@@ -82,9 +82,8 @@ function wp_imager($width=null, $height=null, $crop=1, $class=null, $link=true, 
 	$original_size 	= $settings['original_size'];
 	$original_url 	= $settings['original_url'];*/
 
-	// TEMP DEF
-	$original_size = null;
-	$bg_color_tt = null;
+	// TEMP
+	$original_size = $bg_color_tt = $printclass = $output = '';
 
 	$cache = 'cache_img'; // the folder where the cached img are stored
 	$htaccess = true; // will produce pretty urls - requires the htaccess
@@ -198,7 +197,8 @@ function wp_imager($width=null, $height=null, $crop=1, $class=null, $link=true, 
 	*   WPML Fix for site url lang edit
 	*
 	-------------------------------------------------------------------------------- */
-
+	// ICL_SITEPRESS_VERSION
+	
 	if(defined('ICL_LANGUAGE_CODE')) {
 		global $sitepress;
 		$deflang = $sitepress->get_default_language();
