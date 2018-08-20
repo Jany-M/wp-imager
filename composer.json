@@ -1,6 +1,6 @@
 {
     "name": "shambix/wp-imager",
-    "type": "wordpress",
+    "type": "wordpress-library",
     "description": "Image resizing and caching for WordPress, for theme developers. Supports Jetpack Photon.",
     "keywords": ["wordpress","caching","images","theme","resize","image resizing"],
     "homepage": "https://github.com/Jany-M/wp-imager",
