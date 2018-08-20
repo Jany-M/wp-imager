@@ -1,0 +1,7 @@
+{
+  "name": "shambix/wp-imager",
+  "description": "Image resizing and caching for WordPress, for theme developers. Supports Jetpack Photon.",
+  "require": {
+      "php": "^5.3.3 || ^7.2"
+  }
+}
