@@ -5,12 +5,12 @@
  *
  *	Description			Script for WordPress that provides resizing, output customization and image caching. Supports Jetpack Photon. Can be used inside or outside the loop.
  *	First Release		29.01.2014
- *	Version				2.7.4
+ *	Version				2.7.6
  *	License				GPL V3 - http://choosealicense.com/licenses/gpl-v3/
  *  External libs		TimThumb - http://code.google.com/p/timthumb/
  *
  *	Author:				Jany Martelli
- *	Author's Website:	http://www.shambix.com/
+ *	Author's Website:	https://www.shambix.com/
  *  Script url:			https://github.com/Jany-M/WP-Imager
  *
  *  @Requirements
@@ -87,6 +87,9 @@ function wp_imager($width=null, $height=null, $crop=1, $class=null, $link=true, 
 
 	$cache = 'cache_img'; // the folder where the cached img are stored
 	$htaccess = true; // will produce pretty urls - requires the htaccess
+	$cdn = false;
+	$photon = false;
+
 	if($original_size === true) define('ORIGINAL_SIZE', true); // if one of the sizes isnt set, then use a function to determine it proportionally
 	if($class !== '') $printclass = 'class="'.$class.'" ';
 
@@ -181,7 +184,13 @@ function wp_imager($width=null, $height=null, $crop=1, $class=null, $link=true, 
 	// Get thumbnail
 	$thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($the_id), 'full');
 
-	// Is Photon on and working?
+	/* --------------------------------------------------------------------------------
+	*
+	*   PLUGIN COMPATIBILITY
+	*
+	-------------------------------------------------------------------------------- */
+
+	// Jetpack Photon
 	// https://developer.wordpress.com/docs/photon/api/
 	if(class_exists('Jetpack') && Jetpack::is_module_active('photon') ) { // method as of WP/Jetpack versions after 05/22/13
 		$photon = true;
@@ -191,14 +200,12 @@ function wp_imager($width=null, $height=null, $crop=1, $class=null, $link=true, 
 	}
 	if($photon && !function_exists('jetpack_photon_url' )) echo 'There is something wrong with your Jetpack / Photon module, or your server configuration - Make sure that your website is publicly reachable.';
 
+	// OptiMole
+	if(class_exists('Optml_Main')) {
+		$cdn = true;
+	}
 
-	/* --------------------------------------------------------------------------------
-	*
-	*   WPML Fix for site url lang edit
-	*
-	-------------------------------------------------------------------------------- */
-	// ICL_SITEPRESS_VERSION
-	
+	// WPML
 	if(defined('ICL_LANGUAGE_CODE')) {
 		global $sitepress;
 		$deflang = $sitepress->get_default_language();
@@ -211,6 +218,8 @@ function wp_imager($width=null, $height=null, $crop=1, $class=null, $link=true, 
 		$genurl = get_bloginfo('url');
 		$exturl = str_replace(get_bloginfo('url').'/', '', $exturl);
 	}
+
+
 	$siteurl = $genurl.'/'.$cache;
 
 
@@ -277,26 +286,38 @@ function wp_imager($width=null, $height=null, $crop=1, $class=null, $link=true, 
 
 		// Fix for Photon
 		if($photon) {
-			$thumb2part = str_replace('http://','', $thumbnail[0]);
+			$thumb2part = str_replace('https://','', $thumbnail[0]);
 		}
 
 		// Output
 		if($original_url) {
 			$output = $thumbnail[0];
 		} elseif ($nohtml) {
+			// PHOTON
 			if($photon) {
-					$output = 'http://i1.wp.com/'.$thumb2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all';
+				$output = 'https://i1.wp.com/'.$thumb2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all';
+			// CDN
+			} elseif($cdn) {
+				$output = $thumb2part;
+			// HTACCESS
 			} elseif ($htaccess) {
-				$output = $siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i'.$thumb2part;
+				$output = $siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$thumb2part;
+			// DEFAULT
 			} else {
 				$output = $siteurl.'/tt.php?src='.$thumb2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100';
 			}
 		} else {
 			if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$the_title.'">';
+			// PHOTON
 			if($photon) {
-				$output .= '<img src="http://i1.wp.com/'.$thumb2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all" alt="'.$the_title.'" '.$printclass.' />';
+				$output .= '<img src="https://i1.wp.com/'.$thumb2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all" alt="'.$the_title.'" '.$printclass.' />';
+			// CDN
+			} elseif($cdn) {
+				$output .= '<img src="'.$thumb2part.'" alt="'.$the_title.'" '.$printclass.' />';
+			// HTACCESS
 			} elseif ($htaccess) {
 				$output .= '<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$thumb2part.'" alt="'.$the_title.'" '.$printclass.' />';
+			// DEFAULT
 			} else {
 				$output .= '<img src="'.$siteurl.'/tt.php?src='.$thumb2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100" alt="'.$the_title.'" '.$printclass.' />';
 			}
@@ -344,26 +365,38 @@ function wp_imager($width=null, $height=null, $crop=1, $class=null, $link=true, 
 
 			// Fix for Photon
 			if($photon) {
-				$img2part = str_replace('http://','', $img_url);
+				$img2part = str_replace('https://','', $img_url);
 			}
 
 			// Output
 			if($original_url) {
 				$output = $img[0];
 			} elseif ($nohtml) {
+				// PHOTON
 				if($photon) {
-					$output = 'http://i1.wp.com/'.$img2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all';
+					$output = 'https://i1.wp.com/'.$img2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all';
+				// CDN
+				} elseif($cdn) {
+					$output = $img2part;
+				// HTACCESS
 				} elseif ($htaccess) {
 					$output = $siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$img2part;
+				// DEFAULT
 				} else {
 					$output = $siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100';
 				}
 			} else {
 				if($link) $output .= '<a href="'.get_permalink($the_id).'" title="'.$the_title.'">';
+				// PHOTON
 				if($photon) {
-					$output .='<img src="http://i1.wp.com/'.$img2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all" alt="'.$the_title.'" '.$printclass.' />';
+					$output .='<img src="https://i1.wp.com/'.$img2part.'?resize='.$width.','.$height.'&amp;quality=100&amp;strip=all" alt="'.$the_title.'" '.$printclass.' />';
+				// CDN
+				} elseif($cdn) {
+					$output .='<img src="'.$img2part.'" alt="'.$the_title.'" '.$printclass.' />';
+				// HTACCESS
 				} elseif ($htaccess) {
 					$output .='<img src="'.$siteurl.'/r/'.$width.'x'.$height.'-'.$crop.'/b/'.$bg_color.'/i/'.$img2part.'" alt="'.$the_title.'" '.$printclass.' />';
+				// DEFAULT
 				} else {
 					$output .='<img src="'.$siteurl.'/tt.php?src='.$img2part.$width_tt.$height_tt.$crop_tt.$bg_color_tt.'&q=100" alt="'.$the_title.'" '.$printclass.' />';
 				}

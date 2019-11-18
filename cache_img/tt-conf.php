@@ -26,8 +26,8 @@ define ('DEFAULT_WIDTH', 300);
 define ('DEFAULT_HEIGHT', 300);
 define ('DEFAULT_ZC', 1);
 define ('PNG_IS_TRANSPARENT', TRUE);
-define ('MAX_WIDTH', 1500);
-define ('MAX_HEIGHT', 1500);
+define ('MAX_WIDTH', 1920);
+define ('MAX_HEIGHT', 1080);
 define ('DEFAULT_CC', 'ffffff');
 
 ?>
